@@ -1,0 +1,13 @@
+Source: php-ssh2
+Section: devel
+Priority: extra
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), php5-dev, libssh2-1-dev, libtool
+Standards-Version: 3.9.1
+Homepage: http://pecl.php.net/package/ssh2
+
+Package: libssh2-php
+Architecture: any
+Depends: ucf, ${shlibs:Depends}, ${misc:Depends}, ${php:Depends}
+Description: PHP Bindings for libssh2
+ These bindings provide a method to utilise SSH connections with PHP

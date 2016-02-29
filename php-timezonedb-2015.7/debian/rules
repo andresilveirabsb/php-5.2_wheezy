@@ -1,0 +1,113 @@
+#!/usr/bin/make -f
+# template debian/rules provided by dh-make-php.
+# GNU copyright 2005 by Uwe Steinmann.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+CFLAGS = -O2 -Wall
+CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -g
+	DEBUG := --enable-debug
+else
+	DEBUG := --disable-debug
+endif
+
+TAR=tar
+PECL_PKG_NAME=timezonedb
+PECL_PKG_REALNAME=timezonedb
+PECL_PKG_VERSION=2015.7
+PACKAGE_NAME=php-timezonedb
+BIN_PACKAGE_NAME=php$*-timezonedb
+PHPIZE=/usr/bin/phpize
+PHPCONFIG=/usr/bin/php-config
+EXT_DIR=$(shell $(PHPCONFIG)$* --extension-dir)
+SOURCE_DIR=$(shell ls -d $(PECL_PKG_REALNAME)-*)
+BINARYTARGETS=binary-arch-v5 
+BUILDTARGETS=build-v5 
+CLEANTARGETS=clean-v5 
+
+phpapiver4=$(shell /usr/bin/php-config4 --phpapi)
+phpapiver5=$(shell /usr/bin/php-config5 --phpapi)
+
+configure-v4 configure-v5: configure-v%: configure-stamp-v%
+configure-stamp-v4 configure-stamp-v5: configure-stamp-v%:
+	dh_testdir
+	(cd $(SOURCE_DIR); \
+	$(PHPIZE)$*; \
+	./configure --with-php-config=$(PHPCONFIG)$* --prefix=/usr)
+#	rm -f configure-stamp-v*
+	touch $@
+
+build: $(BUILDTARGETS)
+
+build-v4 build-v5: build-v%: build-stamp-v%
+
+build-stamp:
+	$(shell /usr/share/dh-make-php/phppkginfo . changelog > debian/Changelog)
+	touch build-stamp
+
+build-stamp-v4 build-stamp-v5: build-stamp-v%: build-stamp configure-stamp-v%
+	dh_testdir
+
+	(cd $(SOURCE_DIR); $(MAKE); mkdir -p ../tmp/modules$*; cp modules/* ../tmp/modules$*; $(MAKE) clean)
+	touch $@
+
+clean: $(CLEANTARGETS)
+	dh_clean
+
+clean-v4 clean-v5: clean-v%:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp* configure-stamp*
+
+	(cd $(SOURCE_DIR); \
+	$(MAKE) clean; \
+	$(PHPIZE)$* --clean)
+	rm -rf tmp/modules$*
+
+install-v4 install-v5: install-v%: build-v%
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+
+	mkdir -p debian/$(BIN_PACKAGE_NAME)/$(EXT_DIR)
+	install -m 644 -o root -g root tmp/modules$*/$(PECL_PKG_NAME).so debian/$(BIN_PACKAGE_NAME)/$(EXT_DIR)/$(PECL_PKG_NAME).so
+	if [ -f "debian/$(PECL_PKG_NAME).ini" ]; then \
+		mkdir -p debian/$(BIN_PACKAGE_NAME)/etc/php$*/conf.d; \
+		cp debian/$(PECL_PKG_NAME).ini debian/$(BIN_PACKAGE_NAME)/etc/php$*/conf.d; \
+	fi
+
+# Build architecture-independent files here.
+binary-indep:
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+
+binary-arch-v4 binary-arch-v5: binary-arch-v%: install-v%
+	echo "php:Depends=phpapi-$(phpapiver$*)" >> debian/$(BIN_PACKAGE_NAME).substvars
+
+binary-arch: $(BINARYTARGETS)
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs debian/Changelog
+	dh_installdocs
+	dh_installexamples
+	dh_installdebconf
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	dh_strip
+endif
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build build-v4 build-v5 clean clean-v4 clean-v5 binary-indep binary-arch binary-arch-v4 binary-arch-v5 binary install-v4 install-v5 configure-v4 configure-v5

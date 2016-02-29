@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+
+DEB_SRCDIR := $(shell basename imagick-*)
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+PHP_EX5=$(shell /usr/bin/php-config5 --extension-dir)
+
+DEB_INSTALL_EXAMPLES_php5-imagick = $(DEB_SRCDIR)/examples/*
+DEB_INSTALL_DOCS_php5-imagick = $(DEB_SRCDIR)/CREDITS
+
+LDFLAGS := -Wl,--as-needed $(LDFLAGS)
+
+clean::
+	rm -f debian/php5-imagick.postrm \
+		debian/php5-imagick.postinst
+	cd $(DEB_SRCDIR) && phpize5 --clean
+
+configure_for_php5::
+	cd $(DEB_SRCDIR) && phpize5 && \
+	    ./configure --with-imagick --with-php-config=/usr/bin/php-config5 \
+	    --disable-static --with-imagick=shared,/usr
+	sed -e 's/phpX/php5/g' < debian/phpX-imagick.postinst > debian/php5-imagick.postinst
+	sed -e 's/phpX/php5/g' < debian/phpX-imagick.postrm   > debian/php5-imagick.postrm
+
+install/php5-imagick:: configure_for_php5
+	$(MAKE) -C $(DEB_SRCDIR)
+	mkdir -p debian/php5-imagick$(PHP_EX5)
+	install -m 644 -o root -g root $(DEB_SRCDIR)/modules/imagick.so debian/php5-imagick$(PHP_EX5)/imagick.so
+	echo "php5:Depends=phpapi-`php-config5 --phpapi`, php5-common" >> debian/php5-imagick.substvars
+	mkdir -p debian/php5-imagick/usr/share/php5-imagick
+	cp debian/imagick.ini debian/php5-imagick/usr/share/php5-imagick/imagick.ini-dist
+
+binary-post-install/php5-imagick::
+	touch debian/php5-imagick/usr/share/doc/php5-imagick/examples/*.php
+	touch debian/php5-imagick/usr/share/doc/php5-imagick/CREDITS

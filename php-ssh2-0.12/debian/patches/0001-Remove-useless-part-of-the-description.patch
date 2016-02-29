@@ -1,0 +1,21 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <taffit@debian.org>
+Date: Mon, 7 Oct 2013 14:59:29 -0400
+Subject: Remove useless part of the description
+
+Forwarded: not-needed
+---
+ package.xml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/package.xml b/package.xml
+index 13a2b86..edb2b9d 100644
+--- a/package.xml
++++ b/package.xml
+@@ -5,7 +5,6 @@
+   <summary>Bindings for the libssh2 library</summary>
+   <description>
+     Provides bindings to the functions of libssh2 which implements the SSH2 protocol.
+-    libssh2 is available from http:/libssh2.org/
+   </description>
+   <lead>
+     <name>Casper Langemeijer</name>

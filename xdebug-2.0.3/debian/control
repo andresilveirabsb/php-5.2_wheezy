@@ -1,0 +1,28 @@
+Source: xdebug
+Section: devel
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), php5-dev
+Standards-Version: 3.7.3
+Homepage: http://xdebug.org/
+
+Package: php5-xdebug
+Architecture: any
+Depends: ucf, ${shlibs:Depends}, ${misc:Depends}, ${php:Depends}
+Description: Xdebug Module for PHP 5
+ The Xdebug extension helps you debugging your script by providing a lot of
+ valuable debug information. The debug information that Xdebug can provide
+ includes the following:
+ .
+    * stack traces and function traces in error messages with:
+       - full parameter display for user defined functions
+       - function name, file name and line indications
+       - support for member functions
+    * memory allocation
+    * protection for infinite recursions
+ .
+ Xdebug also provides:
+ .
+    * profiling information for PHP scripts
+    * script execution analysis
+    * capabilities to debug your scripts interactively with a debug client

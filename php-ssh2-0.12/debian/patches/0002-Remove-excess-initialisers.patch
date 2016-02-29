@@ -1,0 +1,24 @@
+From: Mathieu Parent <math.parent@gmail.com>
+Date: Thu, 19 Jun 2014 21:50:41 +0200
+Subject: Remove excess initialisers
+
+WHile fixing php bug #61253, API was changed.
+
+Debain-Bug: https://bugs.debian.org/750081
+---
+ ssh2-0.12/ssh2_sftp.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/ssh2-0.12/ssh2_sftp.c b/ssh2-0.12/ssh2_sftp.c
+index f46f11e..4666a72 100644
+--- a/ssh2-0.12/ssh2_sftp.c
++++ b/ssh2-0.12/ssh2_sftp.c
+@@ -567,8 +567,6 @@ php_stream_wrapper php_ssh2_sftp_wrapper = {
+ 	&php_ssh2_sftp_wrapper_ops,
+ 	NULL,
+ 	1,
+-	0,
+-	NULL,
+ };
+ 
+ /* *****************

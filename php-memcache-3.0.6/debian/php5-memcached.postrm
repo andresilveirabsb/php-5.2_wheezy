@@ -1,0 +1,18 @@
+#! /bin/sh
+set -e
+
+if test "$1" = "purge"; then
+    if which ucf >/dev/null 2>&1; then
+        ucf --purge /etc/php5/conf.d/memcached.ini
+    fi
+    rm -f /etc/php5/conf.d/memcached.ini
+fi
+
+if test "$1" = "remove"; then
+    sed s/extension/\;extension/g -i /etc/php5/conf.d/memcached.ini
+fi
+
+#DEBHELPER#
+
+exit 0
+

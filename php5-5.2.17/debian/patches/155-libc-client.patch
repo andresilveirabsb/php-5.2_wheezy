@@ -1,0 +1,14 @@
+--- a/ext/imap/config.m4
++++ b/ext/imap/config.m4
+@@ -198,6 +198,11 @@ if test "$PHP_IMAP" != "no"; then
+       ln -s "$IMAP_DIR/$PHP_LIBDIR/c-client.a" "$IMAP_DIR/$PHP_LIBDIR/libc-client.a" >/dev/null 2>&1
+     fi
+ 
++    if test ! -r "$IMAP_DIR/$PHP_LIBDIR/libc-client.a"; then
++      PHP_LIBDIR_SHORT=`echo $PHP_LIBDIR | cut -f1 -d'/'`
++      ln -s "$IMAP_DIR/$PHP_LIBDIR_SHORT/libc-client.a" "$IMAP_DIR/$PHP_LIBDIR/libc-client.a" >/dev/null 2>&1
++    fi
++
+     for lib in c-client4 c-client imap; do
+       IMAP_LIB=$lib
+       IMAP_LIB_CHK($PHP_LIBDIR)
