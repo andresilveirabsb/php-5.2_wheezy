@@ -1,0 +1,21 @@
+--- a/ext/pcre/config0.m4
++++ b/ext/pcre/config0.m4
+@@ -23,14 +23,17 @@ if test "$PHP_PCRE_REGEX" != "no"; then
+     if test -z "$PCRE_INCDIR"; then
+       AC_MSG_ERROR([Could not find pcre.h in $PHP_PCRE_REGEX])
+     fi
++    AC_MSG_RESULT([$PCRE_INCDIR])
+ 
+-    for j in $PHP_PCRE_REGEX $PHP_PCRE_REGEX/$PHP_LIBDIR; do
++    AC_MSG_CHECKING([for PCRE library location])
++    for j in $PHP_PCRE_REGEX $PHP_PCRE_REGEX/$PHP_LIBDIR/$DEB_HOST_MULTIARCH $PHP_PCRE_REGEX/$PHP_LIBDIR; do
+       test -f $j/libpcre.a || test -f $j/libpcre.$SHLIB_SUFFIX_NAME && PCRE_LIBDIR=$j
+     done
+     
+     if test -z "$PCRE_LIBDIR" ; then
+       AC_MSG_ERROR([Could not find libpcre.(a|$SHLIB_SUFFIX_NAME) in $PHP_PCRE_REGEX])
+     fi
++    AC_MSG_RESULT([$PCRE_LIBDIR])
+ 
+     changequote({,})
+     pcre_major=`grep PCRE_MAJOR $PCRE_INCDIR/pcre.h | sed -e 's/[^0-9]//g'`

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# uncomment module loading (install after remove case)
+if test -e /etc/php52/conf.d/imagick.ini
+then
+	sed -i s/\;extension/extension/g /etc/php52/conf.d/imagick.ini
+fi
+
+if test "$1" = "configure"
+then
+	ucf /usr/share/php52-imagick/imagick.ini-dist /etc/php52/conf.d/imagick.ini
+fi
+
+#DEBHELPER#
+
+exit 0

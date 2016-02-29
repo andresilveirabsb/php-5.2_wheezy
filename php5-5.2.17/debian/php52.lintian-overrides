@@ -1,0 +1,2 @@
+php52-common: non-standard-dir-perm var/lib/php52/ 1733 != 0755
+php52-common: package-contains-empty-directory usr/lib/php52/libexec/

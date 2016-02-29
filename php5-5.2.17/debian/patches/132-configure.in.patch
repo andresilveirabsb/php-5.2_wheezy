@@ -1,0 +1,36 @@
+--- a/configure.in
++++ b/configure.in
+@@ -42,7 +42,7 @@
+ PHP_MAJOR_VERSION=5
+ PHP_MINOR_VERSION=2
+ PHP_RELEASE_VERSION=17
+-PHP_EXTRA_VERSION="-1"
++PHP_EXTRA_VERSION=""
+ PHP_VERSION="$PHP_MAJOR_VERSION.$PHP_MINOR_VERSION.$PHP_RELEASE_VERSION$PHP_EXTRA_VERSION"
+ PHP_VERSION_ID=`expr [$]PHP_MAJOR_VERSION \* 10000 + [$]PHP_MINOR_VERSION \* 100 + [$]PHP_RELEASE_VERSION`
+ 
+@@ -986,7 +986,7 @@
+ fi
+ 
+ PHP_ARG_WITH(pear, [whether to install PEAR],
+-[  --with-pear=DIR         Install PEAR in DIR [PREFIX/lib/php5]
++[  --with-pear=DIR         Install PEAR in DIR [PREFIX/lib/php]
+   --without-pear          Do not install PEAR], DEFAULT, yes)
+ 
+ if test "$PHP_PEAR" != "no"; then
+@@ -1146,6 +1146,7 @@
+ EXPANDED_LOCALSTATEDIR=`eval echo $localstatedir`
+ EXPANDED_BINDIR=`eval echo $bindir`
+ EXPANDED_SBINDIR=`eval echo $sbindir`
++EXPANDED_MANDIR=`eval echo $mandir`
+ EXPANDED_LIBDIR=$libdir
+ EXPANDED_SYSCONFDIR=`eval echo $sysconfdir`
+ EXPANDED_DATADIR=$datadir
+@@ -1162,6 +1163,7 @@
+ AC_SUBST(EXPANDED_EXTENSION_DIR)
+ AC_SUBST(EXPANDED_BINDIR)
+ AC_SUBST(EXPANDED_SBINDIR)
++AC_SUBST(EXPANDED_MANDIR)
+ AC_SUBST(EXPANDED_LIBDIR)
+ AC_SUBST(EXPANDED_DATADIR)
+ AC_SUBST(EXPANDED_SYSCONFDIR)

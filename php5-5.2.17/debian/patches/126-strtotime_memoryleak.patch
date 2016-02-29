@@ -1,0 +1,62 @@
+--- a/ext/date/php_date.c
++++ b/ext/date/php_date.c
+@@ -776,7 +776,7 @@ static char *date_format(char *format, i
+ 			offset->offset = (t->z) * -60;
+ 			offset->leap_secs = 0;
+ 			offset->is_dst = 0;
+-			offset->abbr = malloc(9); /* GMT±xxxx\0 */
++			offset->abbr = malloc(9); /* GMTÂ±xxxx\0 */
+ 			snprintf(offset->abbr, 9, "GMT%c%02d%02d", 
+ 			                          localtime ? ((offset->offset < 0) ? '-' : '+') : '+',
+ 			                          localtime ? abs(offset->offset / 3600) : 0,
+@@ -985,7 +985,7 @@ PHPAPI int php_idate(char format, time_t
+ 			offset->offset = (t->z - (t->dst * 60)) * -60;
+ 			offset->leap_secs = 0;
+ 			offset->is_dst = t->dst;
+-			offset->abbr = malloc(9); /* GMT±xxxx\0 */
++			offset->abbr = malloc(9); /* GMTÂ±xxxx\0 */
+ 			snprintf(offset->abbr, 9, "GMT%c%02d%02d", 
+ 			                          !localtime ? ((offset->offset < 0) ? '-' : '+') : '+',
+ 			                          !localtime ? abs(offset->offset / 3600) : 0,
+@@ -1135,7 +1135,7 @@ PHP_FUNCTION(strtotime)
+ 	long  preset_ts, ts;
+ 
+ 	timelib_time *t, *now;
+-	timelib_tzinfo *tzi;
++	timelib_tzinfo *tzi, *old_tzi;
+ 
+ 	tzi = get_timezone_info(TSRMLS_C);
+ 
+@@ -1146,10 +1146,14 @@ PHP_FUNCTION(strtotime)
+ 		initial_ts = emalloc(25);
+ 		snprintf(initial_ts, 24, "@%ld UTC", preset_ts);
+ 		t = timelib_strtotime(initial_ts, strlen(initial_ts), NULL, DATE_TIMEZONEDB); /* we ignore the error here, as this should never fail */
++		old_tzi = t->tz_info;
+ 		timelib_update_ts(t, tzi);
+ 		now->tz_info = tzi;
+ 		now->zone_type = TIMELIB_ZONETYPE_ID;
+ 		timelib_unixtime2local(now, t->sse);
++		if ( old_tzi ) {
++			timelib_tzinfo_dtor(old_tzi);
++		}
+ 		timelib_time_dtor(t);
+ 		efree(initial_ts);
+ 	} else if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &times, &time_len, &preset_ts) != FAILURE) {
+@@ -1168,6 +1172,7 @@ PHP_FUNCTION(strtotime)
+ 	}
+ 	
+ 	t = timelib_strtotime(times, time_len, &error, DATE_TIMEZONEDB);
++	old_tzi = t->tz_info;
+ 	error1 = error->error_count;
+ 	timelib_error_container_dtor(error);
+ 	timelib_fill_holes(t, now, TIMELIB_NO_CLONE);
+@@ -1175,6 +1180,9 @@ PHP_FUNCTION(strtotime)
+ 	ts = timelib_date_to_int(t, &error2);
+ 
+ 	timelib_time_dtor(now);
++	if ( old_tzi ) {
++		timelib_tzinfo_dtor(old_tzi);
++	}
+ 	timelib_time_dtor(t);
+ 
+ 	if (error1 || error2) {

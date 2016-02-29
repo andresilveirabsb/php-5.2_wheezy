@@ -1,0 +1,3 @@
+version=3
+opts=uversionmangle=s/(\d)(\d)(\d)/$1.$2.$3/ \
+  http://www.xdebug.org/index.php /link.php\?url=xdebug(\d+)

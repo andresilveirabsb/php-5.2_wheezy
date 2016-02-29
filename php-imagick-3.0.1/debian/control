@@ -1,0 +1,19 @@
+Source: php52-imagick
+Section: php
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), php52-dev, libmagickcore-dev, libmagickwand-dev, cdbs
+Standards-Version: 3.8.4
+Homepage: http://pecl.php.net/package/imagick
+
+Package: php52-imagick
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${php5:Depends}, ucf
+Description: ImageMagick module for php5
+ This package provides a wrapper for ImageMagick library
+ directly from PHP scripts.
+ .
+ PHP5 is an HTML-embedded scripting language. Much of its syntax is borrowed
+ from C, Java and Perl with a couple of unique PHP-specific features thrown
+ in. The goal of the language is to allow web developers to write
+ dynamically generated pages quickly.

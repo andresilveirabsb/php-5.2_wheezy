@@ -1,0 +1,20 @@
+curl CURL
+gd GD
+gmp GMP
+imap IMAP
+interbase Interbase
+ldap LDAP
+mcrypt MCrypt
+mhash MHASH
+ming Ming
+mysql MySQL
+odbc ODBC
+pgsql PostgreSQL
+pspell pspell
+recode recode
+snmp SNMP
+sqlite SQLite
+sybase Sybase mssql
+tidy tidy
+xmlrpc XML-RPC
+xsl XSL

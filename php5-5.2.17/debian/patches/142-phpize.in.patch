@@ -1,0 +1,28 @@
+--- a/scripts/phpize.in
++++ b/scripts/phpize.in
+@@ -2,6 +2,7 @@
+ 
+ # Variable declaration
+ prefix='@prefix@'
++datarootdir='@datarootdir@'
+ exec_prefix="`eval echo @exec_prefix@`"
+ phpdir="$prefix/lib/php5/build"
+ includedir="$prefix/include/php5"
+@@ -88,7 +89,7 @@ EOF
+   fi
+ 
+   case "$phpdir" in
+-  *\ * | *\ *)
++  *\ * | *\	*)
+     cat <<EOF
+ Invalid source path '$phpdir'. Whitespace is not allowed in source path.
+ 
+@@ -97,7 +98,7 @@ EOF
+   esac
+ 
+   case "$builddir" in
+-  *\ * | *\ *)
++  *\ * | *\	*)
+     cat <<EOF
+ Invalid build path '$builddir'. Whitespace is not allowed in build path.
+ 

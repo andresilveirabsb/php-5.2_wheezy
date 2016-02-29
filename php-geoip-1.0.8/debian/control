@@ -1,0 +1,17 @@
+Source: php52-geoip
+Section: web
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), po-debconf, xsltproc, php52-dev, build-essential, debhelper, libgeoip-dev
+Standards-Version: 3.9.1
+
+Package: php52-geoip
+Architecture: any
+Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends}, php52-common, libgeoip1, ucf
+Description: GeoIP module for php5
+ This PHP module allows you to find the location of an IP address -
+ City, State, Country, Longitude, Latitude, and other information as
+ all, such as ISP and connection type.
+ .
+ For more info, please visit Maxmind's website:
+ http://www.maxmind.com/

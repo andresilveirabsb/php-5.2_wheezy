@@ -1,0 +1,3 @@
+version=3
+http://pecl.php.net/package/timezonedb \
+  /get/timezonedb-([\d\.]*).tgz  debian  uupdate

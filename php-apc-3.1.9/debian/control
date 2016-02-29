@@ -1,0 +1,15 @@
+Source: php52-apc
+Section: web
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), po-debconf, xsltproc, php52-dev, build-essential, debhelper, libpcre3-dev
+Standards-Version: 3.9.1
+
+Package: php52-apc
+Architecture: any
+Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends}, php52-common, ucf
+Description: APC module for PHP 5
+ Alternative PHP Cache
+ .
+ APC is a free, open, and robust framework for caching and optimizing
+ PHP intermediate code.

@@ -1,0 +1,3 @@
+/etc/apache2/mods-available
+/etc/php52/apache2filter
+/usr/lib/apache2/modules

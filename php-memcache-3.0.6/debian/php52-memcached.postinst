@@ -1,0 +1,15 @@
+#! /bin/sh -e
+set -e
+
+if test -e /etc/php52/conf.d/memcached.ini; then
+    sed s/\;extension/extension/g -i /etc/php52/conf.d/memcached.ini
+fi
+
+if test "$1" = "configure"; then
+    ucf /usr/share/php52-memcached/memcached.ini-dist /etc/php52/conf.d/memcached.ini
+fi
+
+#DEBHELPER#
+
+exit 0
+

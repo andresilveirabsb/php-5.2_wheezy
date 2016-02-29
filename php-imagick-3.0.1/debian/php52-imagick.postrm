@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+# if just removing the package, comment out the module loading
+if test "$1" = "remove"
+then
+	sed -i s/extension/\;extension/g /etc/php52/conf.d/imagick.ini
+fi
+
+if test "$1" = "purge"
+then
+	if which ucf >/dev/null 2>&1
+	then
+		ucf --purge /etc/php52/conf.d/imagick.ini
+	fi
+	rm -f /etc/php52/conf.d/imagick.ini
+fi
+
+#DEBHELPER#
+
+exit 0

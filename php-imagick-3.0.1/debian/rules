@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+DEB_SRCDIR := $(shell basename imagick-*)
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+PHP_EX5=$(shell /usr/bin/php-config52 --extension-dir)
+
+DEB_INSTALL_EXAMPLES_php-imagick = $(DEB_SRCDIR)/examples/*
+DEB_INSTALL_DOCS_php-imagick = $(DEB_SRCDIR)/CREDITS
+
+LDFLAGS := -Wl,--as-needed $(LDFLAGS)
+
+clean::
+	cd $(DEB_SRCDIR) && phpize52 --clean
+
+configure_for_php::
+	cd $(DEB_SRCDIR) && phpize52 && \
+	    ./configure --with-imagick --with-php-config=/usr/bin/php-config52 \
+	    --disable-static --with-imagick=shared,/usr
+
+install/php52-imagick:: configure_for_php
+	$(MAKE) -C $(DEB_SRCDIR)
+	mkdir -p debian/php52-imagick$(PHP_EX5)
+	install -m 644 -o root -g root $(DEB_SRCDIR)/modules/imagick.so debian/php52-imagick$(PHP_EX5)/imagick.so
+	echo "php5:Depends=phpapi-`php-config52 --phpapi`, php52-common" >> debian/php52-imagick.substvars
+	mkdir -p debian/php52-imagick/usr/share/php52-imagick
+	cp debian/imagick.ini debian/php52-imagick/usr/share/php52-imagick/imagick.ini-dist
+
+binary-post-install/php52-imagick::
+	touch debian/php52-imagick/usr/share/doc/php52-imagick/examples/*.php
+	touch debian/php52-imagick/usr/share/doc/php52-imagick/CREDITS

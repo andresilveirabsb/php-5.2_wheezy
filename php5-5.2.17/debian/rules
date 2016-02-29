@@ -1,0 +1,636 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper. 
+# GNU copyright 1997 by Joey Hess.
+#
+# This version is for a hypothetical package that builds an
+# architecture-dependant package, as well as an architecture-independent
+# package.
+
+# Uncomment this to turn on verbose mode. 
+export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+# Set this flag to 'yes' if you want to disable all modifications breaking abi 
+# compatibility to upstream
+PHP5_COMPAT=no
+
+DEB_HOST_GNU_TYPE    ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+PHP5_SOURCE_VERSION   = $(shell dpkg-parsechangelog | grep ^Version | sed "s/Version: //")
+PHP5_UPSTREAM_VERSION = $(shell echo $(PHP5_SOURCE_VERSION) | sed -e "s/-.*//" -e "s/.*://")
+PHP5_DEBIAN_REVISION  = $(shell echo $(PHP5_SOURCE_VERSION) | sed "s/.*-//")
+
+# specify some options to our patch system
+QUILT_DIFF_OPTS=-p
+QUILT_NO_DIFF_TIMESTAMPS=1 
+QUILT_PATCH_OPTS=--ignore-whitespace
+export QUILT_DIFF_OPTS QUILT_NO_DIFF_TIMESTAMPS QUILT_PATCH_OPTS
+
+PROG_SENDMAIL = /usr/sbin/sendmail
+ifeq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+  CFLAGS += -O2
+else
+  CFLAGS += -O0
+endif
+CFLAGS += -Wall -fsigned-char -fno-strict-aliasing 
+# LFS support
+ifneq (yes,$(PHP5_COMPAT))
+  CFLAGS += $(shell getconf LFS_CFLAGS)
+endif
+
+# Enable IEEE-conformant floating point math on alphas (not the default)
+ifeq (alpha-linux-gnu,$(DEB_HOST_GNU_TYPE))
+  CFLAGS += -mieee
+endif
+
+ifeq ($(DEB_HOST_GNU_TYPE), $(findstring $(DEB_HOST_GNU_TYPE), ia64-linux-gnu powerpc64-linux-gnu avr32-linux-gnu))
+  CFLAGS += -g
+else
+  CFLAGS += -gstabs
+endif
+
+# Old magic.mime location:
+ifeq ($(wildcard /usr/share/misc/file/magic.mime), /usr/share/misc/file/magic.mime)
+MAGIC_MIME = /usr/share/misc/file/magic.mime
+endif
+# New magic.mime location:
+ifeq ($(wildcard /usr/share/file/magic.mime), /usr/share/file/magic.mime)
+MAGIC_MIME = /usr/share/file/magic.mime
+endif
+
+# some other helpful (for readability at least) shorthand variables
+PHPIZE_BUILDDIR = debian/php52-dev/usr/lib/php52/build
+
+# support new (>= 2.2) and older versions of libtool for backporting ease
+LIBTOOL_DIRS = /usr/share/libtool/config /usr/share/libtool
+LTMAIN = $(firstword $(wildcard $(foreach d,$(LIBTOOL_DIRS),$d/ltmain.sh)))
+LTMAIN_DIR = $(dir $(LTMAIN))
+
+ifeq ($(LTMAIN_DIR), /usr/share/libtool/)
+LIBTOOL_CONFLICTS:=libtool (>= 2.2)
+else ifeq ($(LTMAIN_DIR), /usr/share/libtool/config/)
+LIBTOOL_CONFLICTS:=libtool (<< 2.2)
+else
+LIBTOOL_CONFLICTS:=$(error "could not resolve path to ltmain.sh")
+endif
+
+# only enable interbase support for i386/amd64/powerpc/sparc
+ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 powerpc sparc))
+	IBFLAGS=--with-interbase=shared,/usr \
+		--with-pdo-firebird=shared,/usr
+endif
+
+COMMON_CONFIG=--build=$(DEB_BUILD_GNU_TYPE) \
+		--host=$(DEB_HOST_GNU_TYPE) \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--disable-debug \
+		--with-regex=php \
+		--disable-rpath \
+		--disable-static \
+		--with-pic \
+		--with-layout=GNU \
+		--with-pear=/usr/share/php52 \
+		--enable-calendar \
+		--enable-json \
+		--enable-suhosin \
+		--enable-sysvsem \
+		--enable-sysvshm \
+		--enable-sysvmsg \
+		--enable-bcmath \
+		--with-bz2 \
+		--enable-ctype \
+		--with-db5 \
+		--without-gdbm \
+		--with-iconv \
+		--enable-exif \
+		--enable-ftp \
+		--enable-dbase \
+		--with-gettext \
+		--enable-mbstring \
+		--with-pcre-regex=/usr \
+		--enable-shmop \
+		--enable-sockets \
+		--enable-simplexml \
+		--enable-dom=/usr \
+		--enable-wddx \
+		--with-libxml-dir=/usr \
+		--enable-tokenizer \
+		--with-zlib \
+		--with-kerberos=/usr \
+		--with-openssl=/usr \
+		--enable-soap \
+		--enable-zip \
+		--with-mime-magic=$(MAGIC_MIME) \
+		--with-exec-dir=/usr/lib/php52/libexec \
+		--with-system-tzdata \
+		--with-libdir=lib/x86_64-linux-gnu
+
+BUILTIN_EXTENSION_CHECK=$$e=get_loaded_extensions(); natcasesort($$e); \
+			$$s="The following extensions are built in:"; \
+			foreach($$e as $$i) { $$s .= " $$i"; } \
+			echo("php:Extensions=" . wordwrap($$s . ".\n", 75, "\$${Newline} "));
+
+# include the patch/unpatch rules from quilt
+include /usr/share/quilt/quilt.make
+
+prepared: prepared-stamp
+prepared-stamp: $(QUILT_STAMPFN)
+	dh_testdir
+	sed -i -e 's/EXTRA_VERSION=""/EXTRA_VERSION="-$(PHP5_DEBIAN_REVISION)"/' configure.in
+	rm -f configure aclocal.m4 config.sub config.guess ltmain.sh
+	./buildconf --force
+	touch prepared-stamp
+
+unprepared:
+	dh_testdir
+	sed -i -e 's/EXTRA_VERSION="-$(PHP5_DEBIAN_REVISION)"/EXTRA_VERSION=""/' configure.in
+	rm -f configure aclocal.m4 config.sub config.guess ltmain.sh
+	#rm -f build/libtool.m4 main/php_config.h.in
+	rm -f main/php_config.h.in
+	rm -f prepared-stamp
+
+test-results.txt: build-apache2-stamp build-cli-stamp build-cgi-stamp
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	mkdir -p temp_session_store
+	env NO_INTERACTION=1 TEST_PHP_CGI_EXECUTABLE=./cgi-build/sapi/cgi/cgi-bin.php52 TEST_PHP_EXECUTABLE=./apache2-build/sapi/cli/php ./apache2-build/sapi/cli/php run-tests.php > test-results.txt
+	rm -rf temp_session_store
+else
+	echo 'nocheck found in DEB_BUILD_OPTIONS' > test-results.txt
+endif
+	cat test-results.txt
+
+build: build-apache2-stamp build-apache2filter-stamp build-cgi-stamp build-cli-stamp build-pear-stamp test-results.txt
+
+build-apache2-stamp: configure-apache2-stamp
+	dh_testdir
+	cd apache2-build && $(MAKE)
+
+	touch build-apache2-stamp
+
+build-apache2filter-stamp: configure-apache2filter-stamp
+	dh_testdir
+	cd apache2filter-build && $(MAKE)
+
+	touch build-apache2filter-stamp
+
+build-cli-stamp: configure-cli-stamp
+	dh_testdir
+	cd cli-build && $(MAKE)
+
+	touch build-cli-stamp
+
+
+build-cgi-stamp: configure-cgi-stamp
+	dh_testdir
+	cd cgi-build && $(MAKE) && mv sapi/cgi/php-cgi sapi/cgi/cgi-bin.php52
+
+	# Dirty hack to not rebuild everything twice
+	cd cgi-build/main && \
+		sed -i -e 's/FORCE_CGI_REDIRECT 1/FORCE_CGI_REDIRECT 0/' \
+		       -e 's/DISCARD_PATH 0/DISCARD_PATH 1/' php_config.h && \
+		sed -i -e 's/--enable-force-cgi-redirect/--enable-discard-path/' build-defs.h && \
+		touch ../../ext/standard/info.c && \
+		touch ../../sapi/cgi/cgi_main.c
+
+	cd cgi-build && $(MAKE) && mv sapi/cgi/php-cgi sapi/cgi/usr.bin.php52-cgi
+
+	touch build-cgi-stamp
+
+build-pear-stamp: build-cgi-stamp
+	dh_testdir
+	-mkdir pear-build
+	-mkdir pear-build-download
+	cd cgi-build && PHP_PEAR_DOWNLOAD_DIR=$(CURDIR)/pear-build-download $(MAKE) install-pear PHP_PEAR_PHP_BIN=/usr/bin/php52 PHP_PEAR_INSTALL_DIR=/usr/share/php52 PHP_PEAR_SYSCONF_DIR=/etc/pear52 PHP_PEAR_SIG_BIN=/usr/bin/gpg INSTALL_ROOT=$(CURDIR)/pear-build
+	sed -i -e 's/-d output_buffering=1 -d open_basedir="" -d safe_mode=0/-d output_buffering=1 -d open_basedir="" -d safe_mode=0 -d memory_limit="-1"/' \
+	       $(CURDIR)/pear-build/usr/bin/pear && \
+	sed -i -e 's/-d output_buffering=1 -d safe_mode=0/-d output_buffering=1 -d open_basedir="" -d safe_mode=0 -d memory_limit="-1"/' \
+	       $(CURDIR)/pear-build/usr/bin/pecl && \
+	sed -i -e 's/-d memory_limit="-1"//' \
+	       -e 's/-d output_buffering=1 -d open_basedir="" -d safe_mode=0/-d output_buffering=1 -d open_basedir="" -d safe_mode=0 -d memory_limit="-1"/' \
+	       $(CURDIR)/pear-build/usr/bin/peardev
+	sed -i -re "s#('PEAR_CONFIG_SYSCONFDIR', PHP_SYSCONFDIR)#\1 . '/pear'#" $(CURDIR)/pear-build/usr/share/php52/PEAR/Config.php
+	touch build-pear-stamp
+
+configure: configure-apache2-stamp configure-apache2filter-stamp configure-cli-stamp configure-cgi-stamp
+
+configure-apache2-stamp: prepared-stamp
+	dh_testdir
+	if [ -d apache2-build ]; then rm -rf apache2-build; fi
+	-mkdir apache2-build
+	cd apache2-build && \
+        CFLAGS="$(CFLAGS)" PROG_SENDMAIL="$(PROG_SENDMAIL)" ../configure \
+		--prefix=/usr --with-apxs2=/usr/bin/apxs2 \
+		--with-config-file-path=/etc/php52/apache2 \
+		--with-config-file-scan-dir=/etc/php52/apache2/conf.d \
+		$(COMMON_CONFIG) \
+		--without-mm \
+		--with-curl=shared,/usr \
+		--with-zlib-dir=/usr \
+		--with-gd=shared --enable-gd-native-ttf \
+		--with-gmp=shared,/usr \
+		--with-jpeg-dir=shared,/usr \
+		--with-xpm-dir=shared,/usr/X11R6 \
+		--with-png-dir=shared,/usr \
+		--with-freetype-dir=shared,/usr \
+		--with-imap=shared,/usr \
+		--with-imap-ssl \
+		$(IBFLAGS) \
+		--with-ttf=shared,/usr \
+		--with-t1lib=shared,/usr \
+		--with-ldap=shared,/usr \
+		--with-ldap-sasl=/usr \
+		--with-mcrypt=shared,/usr \
+		--with-mhash=shared,/usr \
+		--with-mysql=shared,/usr \
+		--with-mysql-sock=/var/run/mysqld/mysqld.sock \
+		--with-mysqli=shared,/usr/bin/mysql_config \
+		--with-ming=shared,/usr \
+		--with-pspell=shared,/usr \
+		--with-unixODBC=shared,/usr \
+		--with-recode=shared,/usr \
+		--with-xsl=shared,/usr \
+		--with-snmp=shared,/usr \
+		--with-sqlite=shared,/usr \
+		--with-mssql=shared,/usr \
+		--with-tidy=shared,/usr \
+		--with-xmlrpc=shared \
+		--with-pgsql=shared,/usr PGSQL_INCLUDE=`pg_config --includedir` \
+		--enable-pdo=shared \
+		--without-pdo-dblib \
+		--with-pdo-mysql=shared,/usr \
+		--with-pdo-odbc=shared,unixODBC,/usr \
+		--with-pdo-pgsql=shared,/usr/bin/pg_config \
+		--with-pdo-sqlite=shared,/usr \
+		--with-pdo-dblib=shared,/usr
+	cd apache2-build && \
+	cp ../Zend/zend_ini_scanner.c ../Zend/zend_language_scanner.c \
+	   ../Zend/zend_ini_parser.h ../Zend/zend_language_parser.h \
+	   ../Zend/zend_ini_parser.c ../Zend/zend_language_parser.c \
+	   Zend/
+	touch configure-apache2-stamp
+
+configure-apache2filter-stamp: prepared-stamp
+	dh_testdir
+	if [ -d apache2filter-build ]; then rm -rf apache2filter-build; fi
+	-mkdir apache2filter-build
+	cd apache2filter-build && \
+        CFLAGS="$(CFLAGS)" PROG_SENDMAIL="$(PROG_SENDMAIL)" ../configure \
+		--prefix=/usr --with-apxs2filter=/usr/bin/apxs2 \
+		--with-config-file-path=/etc/php52/apache2filter \
+		--with-config-file-scan-dir=/etc/php52/apache2filter/conf.d \
+		$(COMMON_CONFIG) \
+		--without-mm \
+		--disable-pdo \
+		--without-mysql --without-sybase-ct --without-mssql \
+		--without-sqlite
+	cd apache2filter-build && \
+	cp ../Zend/zend_ini_scanner.c ../Zend/zend_language_scanner.c \
+	   ../Zend/zend_ini_parser.h ../Zend/zend_language_parser.h \
+	   ../Zend/zend_ini_parser.c ../Zend/zend_language_parser.c \
+	   Zend/
+	touch configure-apache2filter-stamp
+
+configure-cgi-stamp: prepared-stamp
+	dh_testdir
+	if [ -d cgi-build ]; then rm -rf cgi-build; fi
+	-mkdir cgi-build
+	cd cgi-build && \
+        CFLAGS="$(CFLAGS)" PROG_SENDMAIL="$(PROG_SENDMAIL)" ../configure \
+		--prefix=/usr --enable-force-cgi-redirect --enable-fastcgi \
+		--with-config-file-path=/etc/php52/cgi \
+		--with-config-file-scan-dir=/etc/php52/cgi/conf.d \
+		$(COMMON_CONFIG) \
+		--without-mm \
+		--disable-pdo \
+		--without-mysql --without-sybase-ct --without-mssql \
+		--without-sqlite
+	cd cgi-build && \
+	cp ../Zend/zend_ini_scanner.c ../Zend/zend_language_scanner.c \
+	   ../Zend/zend_ini_parser.h ../Zend/zend_language_parser.h \
+	   ../Zend/zend_ini_parser.c ../Zend/zend_language_parser.c \
+	   Zend/
+	touch configure-cgi-stamp
+
+configure-cli-stamp: prepared-stamp
+	dh_testdir
+	if [ -d cli-build ]; then rm -rf cli-build; fi
+	-mkdir cli-build
+	cd cli-build && \
+        CFLAGS="$(CFLAGS)" PROG_SENDMAIL="$(PROG_SENDMAIL)" ../configure \
+		--prefix=/usr --disable-cgi \
+		--with-config-file-path=/etc/php52/cli \
+		--with-config-file-scan-dir=/etc/php52/cli/conf.d \
+		$(COMMON_CONFIG) \
+		--without-mm \
+		--disable-pdo \
+		--with-readline=/usr \
+		--without-mysql --without-sybase-ct --without-sqlite \
+		--without-mssql --enable-pcntl \
+		--with-ncurses=/usr
+	cd cli-build && \
+	cp ../Zend/zend_ini_scanner.c ../Zend/zend_language_scanner.c \
+	   ../Zend/zend_ini_parser.h ../Zend/zend_language_parser.h \
+	   ../Zend/zend_ini_parser.c ../Zend/zend_language_parser.c \
+	   Zend/
+	touch configure-cli-stamp
+
+clean: unprepared unpatch
+	dh_testdir
+	dh_testroot
+
+
+	rm -f configure-apache2-stamp build-apache2-stamp
+	rm -f configure-apache2filter-stamp build-apache2filter-stamp
+	rm -f configure-cgi-stamp build-cgi-stamp
+	rm -f configure-cli-stamp build-cli-stamp
+	rm -f build-pear-stamp
+	rm -f install-stamp
+	rm -rf apache2-build
+	rm -rf apache2filter-build
+	rm -rf cgi-build
+	rm -rf cli-build
+	rm -rf pear-build pear-build-download
+	rm -f debian/copyright
+	rm -f test-results.txt
+	dh_clean -Xorig
+
+	# clean up autogenerated cruft
+	cat debian/modulelist | while read package extname dsoname; do \
+		rm -f debian/php52-$$package.postinst; \
+	done
+	for sapi in libapache2-mod-php52 libapache2-mod-php52filter php52-cgi php52-cli; do \
+		for cruft in postrm links; do \
+			rm -f debian/$${sapi}.$${cruft}; \
+		done; \
+	done
+
+install: DH_OPTIONS=
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	chmod 01733 debian/php52-common/var/lib/php52
+
+	# Add here commands to install the package into debian/php5.
+	# install apache2 DSO module
+	cp apache2-build/.libs/libphp5.so \
+		debian/libapache2-mod-php52/`apxs2 -q LIBEXECDIR`/libphp52.so
+	cp debian/libapache2-mod-php52.load \
+		debian/libapache2-mod-php52/etc/apache2/mods-available/php52.load
+	cp debian/libapache2-mod-php52.conf \
+		debian/libapache2-mod-php52/etc/apache2/mods-available/php52.conf
+
+	# Add here commands to install the package into debian/php5.
+	# install apache2 DSO filter module
+	cp apache2filter-build/.libs/libphp5.so \
+		debian/libapache2-mod-php52filter/`apxs2 -q LIBEXECDIR`/libphp52filter.so
+	cp debian/libapache2-mod-php52filter.load \
+		debian/libapache2-mod-php52filter/etc/apache2/mods-available/php52filter.load
+	cp debian/libapache2-mod-php52filter.conf \
+		debian/libapache2-mod-php52filter/etc/apache2/mods-available/php52filter.conf
+
+	# sanitize php.ini file
+	cat php.ini-dist | tr "\t" " " > debian/php52-common/usr/share/php52/php.ini-dist
+	cat php.ini-dist | tr "\t" " " | sed -e'/memory_limit =/ s/128M/32M/g' > debian/php52-common/usr/share/php52/php.ini-dist.cli
+	cat php.ini-dist | tr "\t" " " > debian/php52-common/usr/share/doc/php52-common/examples/php.ini-dist
+	cat php.ini-recommended | tr "\t" " " > debian/php52-common/usr/share/doc/php52-common/examples/php.ini-recommended
+	cat php.ini-paranoid | tr "\t" " " > debian/php52-common/usr/share/doc/php52-common/examples/php.ini-paranoid
+	cp test-results.txt debian/php52-common/usr/share/doc/php52-common/
+
+	# install the apache modules' files
+	cd apache2-build && $(MAKE) install-headers install-build install-modules install-programs INSTALL_ROOT=$(CURDIR)/debian/libapache2-mod-php52
+	# remove netware and win32 headers that we don't want
+
+	find debian/libapache2-mod-php52/usr/include -type f -name "readdir.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "tsrm_config.nw.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "tsrm_config.w32.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "tsrm_nw.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "tsrm_win32.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "zend_config.nw.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "zend_config.w32.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "config.nw.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "config.w32.h" -exec rm {} \;
+	find debian/libapache2-mod-php52/usr/include -type f -name "win95nt.h" -exec rm {} \;
+
+	# install PEAR
+	cp -a pear-build/* debian/php52-pear/
+
+	mv debian/php52-pear/usr/bin/pear debian/php52-pear/usr/bin/pear52
+	mv debian/php52-pear/usr/bin/peardev debian/php52-pear/usr/bin/pear52dev
+	mv debian/php52-pear/usr/bin/pecl debian/php52-pear/usr/bin/pecl52
+
+	# everything under usr/share/php/data except 'PEAR' is b0rken
+	# and actually needs to be fixed
+	[ ! -f debian/php52-pear/usr/share/php52/data/Structures_Graph/LICENSE ] || \
+		$(RM) debian/php52-pear/usr/share/php52/data/Structures_Graph/LICENSE
+	[ ! -f debian/php52-pear/usr/share/php52/doc/PEAR/INSTALL ] || \
+		$(RM) debian/php52-pear/usr/share/php52/doc/PEAR/INSTALL
+	[ ! -f debian/php52-pear/usr/share/php52/doc/Structures_Graph/docs/generate.sh ] || \
+		$(RM) debian/php52-pear/usr/share/php52/doc/Structures_Graph/docs/generate.sh
+	for f in Structures_Graph/publish.sh Structures_Graph/package.sh \
+		Structures_Graph/genpackage.xml.pl; do \
+		$(RM) debian/php52-pear/usr/share/php52/data/$$f; \
+	done
+	# we don't want test suites
+	$(RM) -r debian/php52-pear/usr/share/php52/test/
+	[ -d debian/php52-pear/usr/share/php52/doc ] && { \
+		mkdir -p debian/php52-pear/usr/share/doc/php52-common/PEAR; \
+		mv debian/php52-pear/usr/share/php52/doc/* \
+			debian/php52-pear/usr/share/doc/php52-common/PEAR/; \
+		$(RM) -r debian/php52-pear/usr/share/php52/doc; \
+		ln -s ../doc/php52-common/PEAR debian/php52-pear/usr/share/php52/doc; \
+		echo "Dummy placeholder to prevent the directory's deletion" > \
+			debian/php52-pear/usr/share/doc/php52-common/PEAR/.placeholder; \
+	}
+		
+
+	# install extensions
+	ext=`./debian/libapache2-mod-php52/usr/bin/php-config --extension-dir`;\
+	for i in libapache2-mod-php52 libapache2-mod-php52filter php52-cgi php52-cli; do \
+		mkdir -p debian/$$i/$${ext}; \
+	done; \
+	cat debian/modulelist debian/extramodulelist | while read package extname dsoname; do \
+		if [ -z "$$dsoname" ]; then dsoname=$$package; fi; \
+		mkdir -p debian/php52-$$package$${ext}; \
+		chrpath debian/libapache2-mod-php52/$${ext}/$$dsoname.so; \
+		chrpath -d debian/libapache2-mod-php52/$${ext}/$$dsoname.so; \
+		install -m 644 -o root -g root \
+			debian/libapache2-mod-php52/$${ext}/$$dsoname.so \
+			debian/php52-$$package$${ext}/$$dsoname.so; \
+		rm debian/libapache2-mod-php52/$${ext}/$$dsoname.so; \
+	done
+
+	# install CGI
+	cp cgi-build/sapi/cgi/cgi-bin.php52 debian/php52-cgi/usr/lib/cgi-bin/php52
+	cp cgi-build/sapi/cgi/usr.bin.php52-cgi debian/php52-cgi/usr/bin/php52-cgi
+	cp cli-build/sapi/cli/php.1 debian/php52-cgi/usr/share/man/man1/php52-cgi.1
+
+	# install CLI
+	cp cli-build/sapi/cli/php debian/php52-cli/usr/bin/php52
+	cp cli-build/sapi/cli/php.1 debian/php52-cli/usr/share/man/man1/php52.1
+
+	# move and install -dev files
+	dh_movefiles --sourcedir=debian/libapache2-mod-php52
+	rm -rf debian/libapache2-mod-php52/usr/lib/php52/build/ \
+	       debian/libapache2-mod-php52/usr/include/ \
+	       debian/libapache2-mod-php52/usr/bin/
+	rm -rf debian/libapache2-mod-php52filter/usr/lib/php52/build/ \
+	       debian/libapache2-mod-php52filter/usr/include/ \
+	       debian/libapache2-mod-php52filter/usr/bin/
+	for i in Makefile.global acinclude.m4 mkdep.awk phpize.m4 scan_makefile_in.awk; do \
+		chmod 644 debian/php52-dev/usr/lib/php52/build/$$i; \
+	done
+	# shipping duplicate files from other packages is hell for security audits
+	ln -sf /usr/share/misc/config.guess $(PHPIZE_BUILDDIR)/config.guess
+	ln -sf /usr/share/misc/config.sub $(PHPIZE_BUILDDIR)/config.sub
+	ln -sf /usr/share/aclocal/libtool.m4 $(PHPIZE_BUILDDIR)/libtool.m4
+	ln -sf $(LTMAIN_DIR)ltmain.sh $(PHPIZE_BUILDDIR)/ltmain.sh
+	ln -sf /usr/bin/shtool $(PHPIZE_BUILDDIR)/shtool
+	# make php-dev stuff versioned
+	for i in php-config phpize; do \
+		mv debian/php52-dev/usr/bin/$$i debian/php52-dev/usr/bin/"$$i"52; \
+		mv debian/php52-dev/usr/share/man/man1/"$$i".1 debian/php52-dev/usr/share/man/man1/"$$i"52.1; \
+	done
+
+	# install common files
+	install -m755 debian/maxlifetime debian/php52-common/usr/lib/php52
+
+	# install lintian overrides
+	cp debian/php52.lintian-overrides $(CURDIR)/debian/php52-common/usr/share/lintian/overrides/php52-common
+	cp debian/php52-dev.lintian-overrides $(CURDIR)/debian/php52-dev/usr/share/lintian/overrides/php52-dev
+
+	# install some generic lintian overrides
+	ext=`debian/php52-dev/usr/bin/php-config52 --extension-dir | cut -b2- `; \
+	for sapi in php52-cli php52-cgi libapache2-mod-php52 libapache2-mod-php52filter; do \
+		mkdir -p $(CURDIR)/debian/"$$sapi"/usr/share/lintian/overrides/; \
+		sed "s/@sapi@/$$sapi/g;s,@extdir@,$$ext,g" \
+		    < $(CURDIR)/debian/php52-sapi.lintian-overrides \
+		    >> $(CURDIR)/debian/"$$sapi"/usr/share/lintian/overrides/"$$sapi"; \
+	done
+
+	# directories cleanup:
+	-rmdir -p debian/libapache2-mod-php52/usr/share/man/man1
+	-find debian/php52-pear -type d -exec rmdir --ignore-fail-on-non-empty -p '{}' \; >/dev/null 2>&1
+
+	touch install-stamp
+
+# Build architecture-independent files here.
+# Pass -i to all debhelper commands in this target to reduce clutter.
+binary-indep: DH_OPTIONS=-i
+binary-indep: build install
+	# Need this version of debhelper for DH_OPTIONS to work.
+	dh_testdir
+	dh_testroot
+	cat debian/copyright.header LICENSE Zend/LICENSE > debian/copyright
+
+	dh_installdocs
+
+	for package in php52 php52-pear; do \
+		rm -rf debian/$$package/usr/share/doc/$$package; \
+		ln -s php52-common debian/$$package/usr/share/doc/$$package; \
+	done
+
+	dh_link
+	dh_compress -Xphp.ini
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	# Need this version of debhelper for DH_OPTIONS to work.
+	dh_testdir
+	dh_testroot
+	# Do this first so we don't overwrite any debhelper-generated files
+	#
+	# generate the maintscripts for various php
+	# modules from the templates.
+	cat debian/modulelist | while read package extname dsoname; do \
+		if [ -z "$$dsoname" ]; then dsoname=$$package; fi; \
+		sed -e"s/@extname@/$$extname/g; s/@dsoname@/$$dsoname/g; \
+		       /#EXTRA#/ r debian/php52-$${package}.postinst.extra" \
+		  < debian/php52-module.postinst \
+		| sed -e'/#EXTRA#/ d' \
+		  > debian/php52-$${package}.postinst; \
+	done
+
+	# generate the config snippets for various php
+	# modules from the templates.
+	cat debian/modulelist debian/extramodulelist | while read package extname dsoname; do \
+		if [ -z "$$dsoname" ]; then dsoname=$$package; fi; \
+		mkdir -p debian/php52-$$package/etc/php52/conf.d; \
+		sed -e"s/@extname@/$$extname/g; s/@dsoname@/$$dsoname/g" \
+		  < debian/php52-module.ini \
+		  > debian/php52-$${package}/etc/php52/conf.d/$${dsoname}.ini; \
+	done
+
+	# likewise, for the different sapi implementations
+	for tmpl in postrm links; do \
+		for sapi in apache2 apache2filter cgi cli; do \
+			sed -e "s/@sapi@/$$sapi/g" \
+		  	< debian/php52-sapi.$$tmpl \
+		  	> debian/php52-$${sapi}.$$tmpl; \
+		done; \
+		mv debian/php52-apache2.$$tmpl debian/libapache2-mod-php52.$$tmpl; \
+		mv debian/php52-apache2filter.$$tmpl debian/libapache2-mod-php52filter.$$tmpl; \
+	done
+
+	cat debian/copyright.header LICENSE Zend/LICENSE > debian/copyright
+	dh_installdocs -s
+
+	cat debian/modulelist | while read package extname dsoname; do \
+		rm -rf debian/php52-$$package/usr/share/doc/php52-$$package; \
+		ln -s php52-common debian/php52-$$package/usr/share/doc/php52-$$package; \
+	done
+
+	for package in php52-dbg php52-dev php52-cgi php52-cli libapache2-mod-php52 libapache2-mod-php52filter; do \
+		rm -rf debian/$$package/usr/share/doc/$$package; \
+		ln -s php52-common debian/$$package/usr/share/doc/$$package; \
+	done
+	dh_installcron -pphp52-common --name=php52
+	dh_installchangelogs -pphp52-common NEWS
+	dh_strip -s --dbg-package=php52-dbg
+	dh_link -s
+	dh_compress -s -Xphp.ini
+	dh_fixperms -s -X /var/lib/php52
+	dh_installdeb -s
+	dh_shlibdeps -s
+
+	phpapi=`./debian/php52-dev/usr/bin/php-config52 --phpapi`; \
+	for i in libapache2-mod-php52 libapache2-mod-php52filter php52-cgi php52-cli; do \
+		echo "php:Provides=phpapi-$${phpapi}" >> debian/$$i.substvars; \
+	done; \
+	cat debian/modulelist | while read package extname dsoname; do \
+		echo "php:Depends=php52 | phpapi-$${phpapi}" >> debian/php52-$$package.substvars; \
+	done
+
+	for i in cgi cli; do \
+		"$$i"-build/sapi/cli/php -n -r '$(BUILTIN_EXTENSION_CHECK)' \
+			>> debian/php52-"$$i".substvars; \
+	done
+	for i in apache2; do \
+		"$$i"-build/sapi/cli/php -n -r '$(BUILTIN_EXTENSION_CHECK)' \
+			>> debian/lib"$$i"-mod-php52.substvars; \
+		"$$i"-build/sapi/cli/php -n -r '$(BUILTIN_EXTENSION_CHECK)' \
+			>> debian/lib"$$i"-mod-php52filter.substvars; \
+	done
+
+	echo "apache2:Depends=apache2-mpm-prefork (>> 2.0.52) | apache2-mpm-itk, apache2.2-common" >>debian/libapache2-mod-php52.substvars
+	echo "apache2:Depends=apache2-mpm-prefork (>> 2.0.52) | apache2-mpm-itk, apache2.2-common" >>debian/libapache2-mod-php52filter.substvars
+
+	echo "libtool:Conflicts=$(LIBTOOL_CONFLICTS)" >>debian/php52-dev.substvars
+	dh_gencontrol -s
+	dh_md5sums -s
+	dh_builddeb -s
+
+binary: binary-arch binary-indep
+.PHONY: build clean binary-indep binary-arch binary install configure

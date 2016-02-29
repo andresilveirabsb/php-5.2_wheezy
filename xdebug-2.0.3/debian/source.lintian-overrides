@@ -1,0 +1,4 @@
+# We don't build the debugclient (yet) so we don't need to update these.
+xdebug source: outdated-autotools-helper-file xdebug-2.0.5/debugclient/config.guess 2001-09-04
+xdebug source: outdated-autotools-helper-file xdebug-2.0.5/debugclient/config.sub 2001-09-07
+

@@ -1,0 +1,167 @@
+--- a/configure.in
++++ b/configure.in
+@@ -1075,12 +1075,12 @@
+ 
+ case $libdir in
+   '${exec_prefix}/lib')
+-    libdir=$libdir/php5
++    libdir=$libdir/php52
+     ;;
+ esac
+ case $datadir in
+   '${prefix}/share')
+-    datadir=$datadir/php5
++    datadir=$datadir/php52
+     ;;
+ esac
+ 
+--- a/ext/ext_skel
++++ b/ext/ext_skel
+@@ -70,7 +70,7 @@
+ fi
+ 
+ if test -z "$skel_dir"; then
+-  skel_dir="/usr/lib/php5/skeleton"
++  skel_dir="/usr/lib/php52/skeleton"
+ fi
+ 
+ ## convert skel_dir to full path
+--- a/ext/session/session.c
++++ b/ext/session/session.c
+@@ -683,7 +683,7 @@
+ PHP_INI_BEGIN()
+ 	STD_PHP_INI_BOOLEAN("session.bug_compat_42",    "1",         PHP_INI_ALL, OnUpdateBool,   bug_compat,         php_ps_globals,    ps_globals)
+ 	STD_PHP_INI_BOOLEAN("session.bug_compat_warn",  "1",         PHP_INI_ALL, OnUpdateBool,   bug_compat_warn,    php_ps_globals,    ps_globals)
+-	STD_PHP_INI_ENTRY("session.save_path",          "/var/lib/php5",      PHP_INI_ALL, OnUpdateString, save_path,          php_ps_globals,    ps_globals)
++	STD_PHP_INI_ENTRY("session.save_path",          "/var/lib/php52",      PHP_INI_ALL, OnUpdateString, save_path,          php_ps_globals,    ps_globals)
+ 	STD_PHP_INI_ENTRY("session.name",               "PHPSESSID", PHP_INI_ALL, OnUpdateString, session_name,       php_ps_globals,    ps_globals)
+ 	PHP_INI_ENTRY("session.save_handler",           "files",     PHP_INI_ALL, OnUpdateSaveHandler)
+ 	STD_PHP_INI_BOOLEAN("session.auto_start",       "0",         PHP_INI_ALL, OnUpdateBool,   auto_start,         php_ps_globals,    ps_globals)
+--- a/php.ini-dist
++++ b/php.ini-dist
+@@ -489,7 +489,7 @@
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+ ; UNIX: "/path1:/path2"
+-;include_path = ".:/usr/share/php"
++;include_path = ".:/usr/share/php52"
+ ;
+ ; Windows: "\path1;\path2"
+ ;include_path = ".;c:\php\includes"
+@@ -959,7 +959,7 @@
+ ;
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+-;session.save_path = /var/lib/php5
++;session.save_path = /var/lib/php52
+ 
+ ; Whether to use cookies.
+ session.use_cookies = 1
+--- a/php.ini-paranoid
++++ b/php.ini-paranoid
+@@ -220,7 +220,7 @@
+ ;     applications (in conjuntion with other unsafe features)
+ ;     http://myhost/myapplication.php?include=http://roguesever/rogueapp.php
+ ;
+-; - session.save_path = /var/lib/php5 [Security]
++; - session.save_path = /var/lib/php52 [Security]
+ ;     This is defined to a non-world readable directory so users cannot 
+ ;     hihack sessions of other users by getting a list of the files.
+ ;
+@@ -773,7 +773,7 @@
+ ; Note: If enabled above you have to create this directory and set appropiate
+ ; permissions. The default (/tmp) is insecure since other users might be able
+ ; to access upload files or make symlink tricks.
+-upload_tmp_dir = /var/lib/php5/uploads
++upload_tmp_dir = /var/lib/php52/uploads
+ 
+ ; Maximum allowed size for uploaded files.
+ upload_max_filesize = 2M
+@@ -1182,7 +1182,7 @@
+ ;
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+-session.save_path = /var/lib/php5
++session.save_path = /var/lib/php52
+ 
+ ; Substring to check each HTTP Referer for. If the Referer was sent by the
+ ; client and the substring was not found, the embedded session id will be marked
+@@ -1495,7 +1495,7 @@
+ ; Enables or disables WSDL caching feature.
+ soap.wsdl_cache_enabled=1
+ ; Sets the directory name where SOAP extension will put cache files.
+-soap.wsdl_cache_dir="/var/lib/php5/soap-cache"
++soap.wsdl_cache_dir="/var/lib/php52/soap-cache"
+ ; (time to live) Sets the number of second while cached file will be used 
+ ; instead of original one.
+ soap.wsdl_cache_ttl=86400
+--- a/php.ini-recommended
++++ b/php.ini-recommended
+@@ -523,7 +523,7 @@
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+ ; UNIX: "/path1:/path2"
+-;include_path = ".:/usr/share/php"
++;include_path = ".:/usr/share/php52"
+ ;
+ ; Windows: "\path1;\path2"
+ ;include_path = ".;c:\php\includes"
+@@ -994,7 +994,7 @@
+ ;
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+-;session.save_path = /var/lib/php5
++;session.save_path = /var/lib/php52
+ 
+ ; Whether to use cookies.
+ session.use_cookies = 1
+--- a/sapi/caudium/config.m4
++++ b/sapi/caudium/config.m4
+@@ -85,8 +85,8 @@
+   AC_DEFINE(HAVE_CAUDIUM,1,[Whether to compile with Caudium support])
+   PHP_SELECT_SAPI(caudium, shared, caudium.c)
+   dnl FIXME: This is the ugliest hack in the world!
+-  dnl INSTALL_IT="\$(mkinstalldirs) \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/ && \$(INSTALL) -m 0755 $SAPI_SHARED \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/php5.so"
+-  INSTALL_IT="\$(mkinstalldirs) \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/ && \$(INSTALL) -m 0755 .$SAPI_SHARED \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/PHP5.so"
++  dnl INSTALL_IT="\$(mkinstalldirs) \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/ && \$(INSTALL) -m 0755 $SAPI_SHARED \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/php52.so"
++  INSTALL_IT="\$(mkinstalldirs) \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/ && \$(INSTALL) -m 0755 .$SAPI_SHARED \$(INSTALL_ROOT)$PHP_CAUDIUM/lib/$PIKE_VERSION/PHP52.so"
+   RESULT="  *** Pike binary used:         $PIKE
+   *** Pike include dir(s) used: $PIKE_INCLUDE_DIR
+   *** Pike version:             $PIKE_VERSION"
+--- a/scripts/Makefile.frag
++++ b/scripts/Makefile.frag
+@@ -3,8 +3,8 @@
+ # Build environment install
+ #
+ 
+-phpincludedir = $(includedir)/php5
+-phpbuilddir = $(prefix)/lib/php5/build
++phpincludedir = $(includedir)/php52
++phpbuilddir = $(prefix)/lib/php52/build
+ 
+ BUILD_FILES = \
+ 	scripts/phpize.m4 \
+--- a/scripts/php-config.in
++++ b/scripts/php-config.in
+@@ -6,7 +6,7 @@
+ exec_prefix="@exec_prefix@"
+ version="@PHP_VERSION@"
+ vernum="@PHP_VERSION_ID@"
+-include_dir="@includedir@/php5"
++include_dir="@includedir@/php52"
+ includes="-I$include_dir -I$include_dir/main -I$include_dir/TSRM -I$include_dir/Zend -I$include_dir/ext -I$include_dir/ext/date/lib $(getconf LFS_CFLAGS)"
+ ldflags="@PHP_LDFLAGS@"
+ libs="@EXTRA_LIBS@"
+--- a/scripts/phpize.in
++++ b/scripts/phpize.in
+@@ -4,8 +4,8 @@
+ prefix='@prefix@'
+ datarootdir='@datarootdir@'
+ exec_prefix="`eval echo @exec_prefix@`"
+-phpdir="$prefix/lib/php5/build"
+-includedir="$prefix/include/php5"
++phpdir="$prefix/lib/php52/build"
++includedir="$prefix/include/php52"
+ aclocaldir="$prefix/share/aclocal"
+ builddir="`pwd`"
+ SED="@SED@"

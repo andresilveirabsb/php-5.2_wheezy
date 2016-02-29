@@ -1,0 +1,20 @@
+This package was debianized by s3rj1k <evasive.gyron@gmail.com> using dh-make-pecl
+on Sat, 12 Dec 2015 16:16:21 +0200.
+
+It was downloaded from http://pecl.php.net/package/timezonedb
+
+Upstream Author(s):
+
+    Derick Rethans
+
+Copyright:
+
+    Copyright (C) 2015 Derick Rethans
+
+License:
+
+    PHP
+
+The Debian packaging is copyright 2009, s3rj1k <evasive.gyron@gmail.com> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+
