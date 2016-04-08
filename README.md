@@ -68,7 +68,7 @@ apt-get update && apt-get -y -t wheezy upgrade && apt-get clean
 ## Build packages using packages.YOUROWNREPO.net:
 
 ```
-apt-get -y build-dep uw-imap && apt-get -y --build source uw-imap
+apt-get -y build-dep uw-imap && export DEB_CFLAGS_MAINT_APPEND=-fPIC && apt-get -y --build source uw-imap
 dpkg -i libc-client*.deb mlock*.deb # FIX FOR PHP-IMAP
 apt-get -y build-dep php5=5.2.17-0+deb7u1 && apt-get -y --build source php5=5.2.17-0+deb7u1
 apt-get -y install automake1.4 shtool && dpkg -i php5-dev*.deb php5-common*.deb
