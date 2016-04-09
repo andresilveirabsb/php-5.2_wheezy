@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+dpkg-maintscript-helper mv_conffile /etc/php5/conf.d/ffmpeg.ini /etc/php5/mods-available/ffmpeg.ini 0.6.0-2.1 -- "$@"
+
+#DEBHELPER#
+
+exit 0

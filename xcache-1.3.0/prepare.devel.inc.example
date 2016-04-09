@@ -1,0 +1,11 @@
+# copy this file as devel.prepare.inc before modifying
+PHP4_x_DIR=
+PHP5_0_DIR=
+PHP5_1_DIR=
+PHP5_3_DIR=
+PHP6_x_DIR=
+
+PHP_DEVEL_DIR=
+
+# path to eaccelerator source dir
+EA_DIR=

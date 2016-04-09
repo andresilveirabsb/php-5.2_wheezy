@@ -1,0 +1,106 @@
+ffmpeg-php (0.6.0-2.2) unstable; urgency=low
+
+  * Initial Release.
+
+ -- s3rj1k <evasive.gyron@gmail.com>  Sat, 12 Dec 2015 18:10:44 +0200
+
+ffmpeg-php (0.6.0-2.2) unstable; urgency=low
+
+  * Use php5{en,dis}mod for conffile handling (Closes: #667765)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 06 Apr 2012 18:21:53 +0200
+
+ffmpeg-php (0.6.0-2.1) unstable; urgency=low
+
+  * Non-maintainer upload
+  * Fix FTBFS with new ffmpeg (Closes: #586550)
+  * Fix FTBFS: ffmpeg_frame.c:335: error: 'PIX_FMT_RGBA32' undeclared
+    (first use in this function) (Closes: #614474)
+  * Fix FTBFS with PHP 5.4 (Closes: #664837)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 21 Mar 2012 10:02:54 +0100
+
+ffmpeg-php (0.6.0-2) unstable; urgency=low
+
+  * Update my email address
+  * Drop DM-UA field
+  * Update VCS fields to reflect switch to git
+  * Update standards version to 3.8.4, no changes needed
+  * Switch to section 'php' instead of 'web'
+  * Use tee to print the test suite progress
+  * Drop ORed dependency on php5 (Closes: #566299)
+  * Define default CFLAGS, properly pass LFSFLAGS and build with
+    hardening flags
+  * Bump copyright year
+  * Actually redirect the testsuite's output to tee
+  * Remove the test-results.txt file on 'clean'
+  * Update the allow_persist... patch to use --INI--
+  * Ignore ffmpeg's info/debug messages on the test suite
+
+ -- Raphael Geissert <geissert@debian.org>  Tue, 09 Feb 2010 23:17:17 -0600
+
+ffmpeg-php (0.6.0-1) unstable; urgency=low
+
+  * New upstream release (Closes: #516365)
+    - Support for the ffmpeg swscale API (Closes: #487643)
+    - API Changes:
+      + Removed obsolete resize() and crop() functions.
+      + Removed animated gif class.
+    - Added check to ensure that gd loads before ffmpeg-php if both are
+      compiled as extensions.
+  * debian/control:
+    + Improve the package description.
+    + Add an ORed dependency on a real php5 SAPI package.
+    + Add a BuildDep on libswscale-dev
+  * debian/rules:
+    + Minor cleanup.
+  * debian/copyright:
+    + Update copyright years
+
+ -- Raphael Geissert <atomo64@gmail.com>  Sun, 22 Feb 2009 20:42:18 -0600
+
+ffmpeg-php (0.5.3.1-3) unstable; urgency=low
+
+  * gdtoimage_fix.patch (Closes: #496079)
+    + fix the toGDImage method by not using gdImageBoundsSafeMacro
+    - Thanks to Patrick Matthäi <patrick.matthaei@web.de> for the patch
+
+ -- Raphael Geissert <atomo64@gmail.com>  Mon, 07 Jul 2008 18:24:47 -0500
+
+ffmpeg-php (0.5.3.1-2) unstable; urgency=low
+
+  * Fix build failure caused by chrpath returning an exit status of 2.
+
+ -- Raphael Geissert <atomo64@gmail.com>  Mon, 07 Jul 2008 17:50:11 -0500
+
+ffmpeg-php (0.5.3.1-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/control:
+    + Added Homepage and Vcs-* fields
+    + Bumped Standards-Version: 3.8.0, no changes needed
+    + Added XS-DM-Upload-Allowed: yes
+  * debian/patches/:
+    + 01gd.patch: dropped, included by upstream
+    + allow_persistent_on_persistentMovie.phpt.patch: fixes a test
+  * Run test suite at build time
+    + Depend on php5-cli and php5-gd, and conflict php5-ffmpeg
+  * debian/copyright: Added more credits
+  * debian/rules: removed some useless stuff
+  * debian/ffmpeg.ini: added some new options as comments
+
+ -- Raphael Geissert <atomo64@gmail.com>  Mon, 30 Jun 2008 18:25:05 -0500
+
+ffmpeg-php (0.5.1-2) unstable; urgency=low
+
+  * Fixed libgd-xpm-dev dependency
+  * Replaced -$(MAKE) clean with [ ! -f Makefile ] || $(MAKE) clean
+
+ -- Raphael Geissert <atomo64@gmail.com>  Mon, 16 Jul 2007 14:09:27 -0500
+
+ffmpeg-php (0.5.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #397462)
+
+ -- Raphael Geissert <atomo64@gmail.com>  Thu, 21 Jun 2007 11:18:17 -0500
+

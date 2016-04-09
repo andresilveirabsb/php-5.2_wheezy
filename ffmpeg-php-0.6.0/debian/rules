@@ -1,0 +1,87 @@
+#!/usr/bin/make -f
+EXTN=ffmpeg
+BUILD=$(CURDIR)/debian/php5-$(EXTN)
+PHP_EX=$(shell /usr/bin/php-config5 --extension-dir)
+LFSFLAGS += $(shell getconf LFS_CFLAGS)
+CFLAGS ?= -g -O2
+
+include /usr/share/quilt/quilt.make
+
+DEB_BUILD_HARDENING_PIE:=0
+include /usr/share/hardening-includes/hardening.make
+
+CFLAGS += $(HARDENING_CFLAGS)
+LDFLAGS += $(HARDENING_LDFLAGS)
+
+modules/$(EXTN).so: build-stamp
+build-stamp: $(QUILT_STAMPFN)
+	dh_testdir
+	phpize5
+	CFLAGS="$(CFLAGS) $(LFSFLAGS)" LDFLAGS="$(LDFLAGS)" \
+	./configure --disable-rpath --prefix=$(BUILD)/usr \
+		--mandir=\$${prefix}/share/man \
+		--infodir=\$${prefix}/share/info \
+		--with-php-config=/usr/bin/php-config5 \
+		--enable-skip-gd-check
+	$(MAKE) DESTDIR=$(BUILD)
+
+	touch build-stamp
+
+test: test-stamp
+test-stamp: modules/$(EXTN).so
+	dh_testdir
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	# prevent php from throwing warnings, causing the tests to fail
+	ln -s $(PHP_EX)/*.so $(CURDIR)/modules/
+	NO_INTERACTION=1 $(MAKE) test 2>&1 | tee test-results.txt
+	# Print the failed tests output:
+	@sed -r 's,^ffmpeg\s+[^\[]+\s+\[(tests/\w+)\.phpt\]$$,\1.log,g' \
+		< test-results.txt | egrep "^tests/.*\.log" | \
+		xargs cat
+else
+	echo 'Skipping test...'
+endif
+	touch $@
+
+build: patch build-stamp test
+
+clean:  unpatch
+	dh_testdir
+	dh_testroot
+	$(RM) build-stamp test-stamp test-results.txt
+	[ ! -d modules ] || { for l in modules/*; do \
+		[ ! -L "$$l" ] || unlink "$$l"; \
+		done; \
+	}
+	[ ! -f Makefile ] || $(MAKE) clean
+	phpize5 --clean
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	install -D -m 644 modules/$(EXTN).so debian/php5-$(EXTN)$(PHP_EX)/$(EXTN).so
+	-chrpath -l debian/php5-$(EXTN)$(PHP_EX)/$(EXTN).so
+	-chrpath -d debian/php5-$(EXTN)$(PHP_EX)/$(EXTN).so
+	install -D -m 644 debian/$(EXTN).ini debian/php5-$(EXTN)/etc/php5/mods-available/$(EXTN).ini
+
+binary-indep:
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog 
+	dh_installdocs
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	echo "php:Depends=phpapi-`php-config5 --phpapi`" >> debian/php5-$(EXTN).substvars
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: clean binary-indep binary-arch binary install test

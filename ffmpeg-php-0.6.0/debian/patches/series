@@ -1,0 +1,8 @@
+allow_persistent_on_persistentMovie.phpt.patch
+gdtoimage_fix.patch
+test_fixes.patch
+fix_ftbfs_pix_fmt_rgba32.patch
+fix_ftbfs_libav-0.7.patch
+find_multiarch_libavcodec.so.patch
+fix_id3_test.patch
+fix_php5.4_list_entry.patch

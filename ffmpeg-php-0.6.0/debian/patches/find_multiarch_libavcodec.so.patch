@@ -1,0 +1,13 @@
+--- a/config.m4
++++ b/config.m4
+@@ -65,6 +65,10 @@ if test "$PHP_FFMPEG" != "no"; then
+     if test -f $i/lib/libavcodec.dylib; then
+       FFMPEG_LIBDIR=$i/lib
+     fi
++    DEB_HOST_MULTIARCH=`dpkg-architecture -qDEB_HOST_MULTIARCH`
++    if test -f $i/lib/$DEB_HOST_MULTIARCH/libavcodec.so; then
++      FFMPEG_LIBDIR=$i/lib/$DEB_HOST_MULTIARCH
++    fi
+     done
+ 
+     PHP_ADD_LIBRARY_WITH_PATH(avcodec, $FFMPEG_LIBDIR, FFMPEG_SHARED_LIBADD)

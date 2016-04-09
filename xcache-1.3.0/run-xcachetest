@@ -1,0 +1,36 @@
+#!/bin/sh
+
+getAbsolutePath() {
+	which readlink >/dev/null 2>&1 && readlink -f "$@" || echo "$@"
+}
+
+# use symlink first
+if test -x ./php-cli ; then
+	php_cli=`getAbsolutePath ./php-cli`
+elif test ! -z "$TEST_PHP_EXECUTABLE" && test -x "$TEST_PHP_EXECUTABLE"; then
+	php_cli="$TEST_PHP_EXECUTABLE"
+else
+	php_cli="`which php`"
+fi
+
+if test -x ./php-cgi ; then
+	php_cgi=`getAbsolutePath ./php-cgi`
+else
+	php_cgi="`which php-cgi`"
+fi
+
+test -z "$PHP_SRC" && PHP_SRC=`getAbsolutePath ./php-src`
+
+TEST_PHP_EXECUTABLE="$php_cli"
+TEST_PHP_CGI_EXECUTABLE="$php_cgi"
+TEST_PHP_SRCDIR="$PHP_SRC"
+
+export TEST_PHP_EXECUTABLE
+export TEST_PHP_CGI_EXECUTABLE
+export TEST_PHP_SRCDIR
+
+echo "XCache test running with:"
+echo "TEST_PHP_CGI_EXECUTABLE: $TEST_PHP_CGI_EXECUTABLE"
+echo "TEST_PHP_EXECUTABLE:     $TEST_PHP_EXECUTABLE"
+
+exec "$php_cli" "$@"

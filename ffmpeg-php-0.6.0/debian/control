@@ -1,0 +1,18 @@
+Source: ffmpeg-php
+Section: php
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 7), php5-dev (>= 5.2.0), libavformat-dev, libavcodec-dev, libswscale-dev, libgd2-xpm-dev, php5-cli (>= 5.2.0), php5-gd, quilt, chrpath, hardening-includes
+Build-Conflicts: php5-ffmpeg
+Standards-Version: 3.8.4
+Homepage: http://ffmpeg-php.sourceforge.net/
+
+Package: php5-ffmpeg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${php:Depends}
+Recommends: php5-gd
+Description: audio and video support via ffmpeg for php5
+ Provides access and retrieval of meta-data from all the movies and
+ audio file formats supported by ffmpeg. Extra features include retrieving and
+ manipulating frames from video files that can later be also manipulated by
+ PHP's own image functions.

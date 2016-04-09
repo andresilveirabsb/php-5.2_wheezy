@@ -1,0 +1,10 @@
+--- a/tests/getID3Info.phpt
++++ b/tests/getID3Info.phpt
+@@ -20,6 +20,6 @@ printf("ffmpeg getYear(): %s\n", $mov->g
+ ffmpeg getTitle(): Test mp3
+ ffmpeg getArtist(): Alexander Thomas
+ ffmpeg getAlbum(): MP3 test files (http://www.dr-lex.be/software/testsounds.html#Tones)
+-ffmpeg getGenre(): (37)
++ffmpeg getGenre(): Sound Clip
+ ffmpeg getTrackNumber(): 3
+ ffmpeg getYear(): 2008

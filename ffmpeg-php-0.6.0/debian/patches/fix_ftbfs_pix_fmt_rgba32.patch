@@ -1,0 +1,46 @@
+Description: Fix FTBFS with ffmpeg >= 0.6 as it doesn't define PIX_FMT_RGBA32 anymore.
+Author: Felix Geyer <debfx-pkg@fobos.de>
+Origin: backport, http://ffmpeg-php.svn.sourceforge.net/viewvc/ffmpeg-php?view=rev&revision=677
+
+--- a/ffmpeg_frame.c
++++ b/ffmpeg_frame.c
+@@ -60,6 +60,12 @@
+     ZEND_FETCH_RESOURCE(gd_img, gdImagePtr, ret, -1, "Image", le_gd); \
+ }
+ 
++#if PIX_FMT_RGBA32
++#define FFMPEG_PHP_FFMPEG_RGB_PIX_FORMAT PIX_FMT_RGBA32
++#else
++#define FFMPEG_PHP_FFMPEG_RGB_PIX_FORMAT PIX_FMT_RGB32
++#endif
++
+ // Borrowed from gd.c
+ #define gdImageBoundsSafeMacro(im, x, y) (!((((y) < (im)->cy1) || ((y) > (im)->cy2)) || (((x) < (im)->cx1) || ((x) > (im)->cx2))))
+ 
+@@ -332,7 +338,7 @@ FFMPEG_PHP_METHOD(ffmpeg_frame, toGDImag
+ 
+     GET_FRAME_RESOURCE(getThis(), ff_frame);
+ 
+-    _php_convert_frame(ff_frame, PIX_FMT_RGBA32);
++    _php_convert_frame(ff_frame, FFMPEG_PHP_FFMPEG_RGB_PIX_FORMAT);
+ 
+     return_value->value.lval = _php_get_gd_image(ff_frame->width, 
+             ff_frame->height);
+@@ -417,7 +423,7 @@ FFMPEG_PHP_METHOD(ffmpeg_frame, ffmpeg_f
+ 
+             /* create a an av_frame and allocate space for it */
+             frame = avcodec_alloc_frame();
+-            avpicture_alloc((AVPicture*)frame, PIX_FMT_RGBA32, width, height);
++            avpicture_alloc((AVPicture*)frame, FFMPEG_PHP_FFMPEG_RGB_PIX_FORMAT, width, height);
+ 
+             /* copy the gd image to the av_frame */
+             _php_gd_image_to_avframe(gd_img, frame, width, height);
+@@ -428,7 +434,7 @@ FFMPEG_PHP_METHOD(ffmpeg_frame, ffmpeg_f
+             /* set the ffpmeg_frame's properties */
+             ff_frame->width = width;
+             ff_frame->height = height;
+-            ff_frame->pixel_format = PIX_FMT_RGBA32;
++            ff_frame->pixel_format = FFMPEG_PHP_FFMPEG_RGB_PIX_FORMAT;
+             break;
+         default:
+             zend_error(E_ERROR, "Invalid argument\n");
