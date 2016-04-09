@@ -89,6 +89,21 @@ dpkg-source -x php5*.dsc
 dpkg-source --skip-patches -x php5*.dsc
 ```
 
+## Prepare original tar archives:
+
+```
+tar -C ./ffmpeg-php-0.6.0 -zcvf ffmpeg-php_0.6.0.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php5-5.2.17 -zcvf php5_5.2.17.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-apc-3.1.9 -zcvf php-apc_3.1.9.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-geoip-1.0.8 -zcvf php-geoip_1.0.8.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-imagick-3.0.1 -zcvf php-imagick_3.0.1.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-memcache-3.0.6 -zcvf php-memcache_3.0.6.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-ssh2-0.12 -zcvf php-ssh2_0.12.orig.tar.gz ./ --exclude='./debian'
+tar -C ./php-timezonedb-2015.7 -zcvf php-timezonedb_2015.7.orig.tar.gz ./ --exclude='./debian'
+tar -C ./xcache-1.3.0 -zcvf xcache_1.3.0.orig.tar.gz ./ --exclude='./debian'
+tar -C ./xdebug-2.0.3 -zcvf xdebug_2.0.3.orig.tar.gz ./ --exclude='./debian'
+```
+
 ## Build package:
 
 ```
@@ -108,6 +123,6 @@ sudo chown -R root:root extract/
 sudo dpkg-deb -b extract/ build/
 ```
 
-*Source package formats can be changed in debian/source/format:* 
+*Source package formats can be changed in debian/source/format:*
 
 ```"3.0     (quilt)"``` *or* ```"3.0      (native)"```
