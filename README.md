@@ -52,14 +52,15 @@ wget -qO - http://packages.YOUROWNREPO.net/packages.pub | apt-key add -
 
 cat <<EOF > /etc/apt/preferences
 Package: *
-Pin: release n=wheezy
-Pin-Priority: 1100
+Pin: release o=Debian,n=wheezy
+Pin-Priority: 400
 Package: *
 Pin: origin packages.YOUROWNREPO.net
 Pin-Priority: 1200
 EOF
 
-echo "deb-src http://packages.YOUROWNREPO.net/ wheezy php52" > /etc/apt/sources.list.d/php.list
+echo "#deb http://packages.YOUROWNREPO.net/ wheezy php52" > /etc/apt/sources.list.d/php.list
+echo "deb-src http://packages.YOUROWNREPO.net/ wheezy php52" >> /etc/apt/sources.list.d/php.list
 
 apt-get update && apt-get -y -t wheezy upgrade && apt-get clean
 
@@ -68,8 +69,14 @@ apt-get update && apt-get -y -t wheezy upgrade && apt-get clean
 ## Build packages using packages.YOUROWNREPO.net:
 
 ```
-apt-get -y build-dep uw-imap && export DEB_CFLAGS_MAINT_APPEND=-fPIC && apt-get -y --build source uw-imap
-dpkg -i libc-client*.deb mlock*.deb # FIX FOR PHP-IMAP
+apt-get install build-essential devscripts
+
+# FIX FOR PHP-IMAP
+export DEB_CFLAGS_MAINT_APPEND=-fPIC
+dpkg-buildflags --get CFLAGS
+apt-get -y build-dep uw-imap && apt-get -y --build source uw-imap
+dpkg -i libc-client*.deb mlock*.deb
+
 apt-get -y build-dep php5=5.2.17-0+deb7u1 && apt-get -y --build source php5=5.2.17-0+deb7u1
 apt-get -y install automake1.4 shtool && dpkg -i php5-dev*.deb php5-common*.deb
 apt-get -y build-dep php-apc=3.1.9-0+deb7u1 && apt-get -y --build source php-apc=3.1.9-0+deb7u1
@@ -79,6 +86,8 @@ apt-get -y build-dep php-memcache=3.0.6-0+deb7u1 && apt-get -y --build source ph
 apt-get -y build-dep php-ssh2=0.12-0+deb7u1 && apt-get -y --build source php-ssh2=0.12-0+deb7u1
 apt-get -y build-dep php-timezonedb=2015.7-0+deb7u1 && apt-get -y --build source php-timezonedb=2015.7-0+deb7u1
 apt-get -y build-dep xdebug=2.0.3-0+deb7u1 && apt-get -y --build source xdebug=2.0.3-0+deb7u1
+apt-get -y build-dep php5-xcache=1.3.0+deb7u1 && apt-get -y --build source php5-xcache=1.3.0+deb7u1
+apt-get -y build-dep php5-ffmpeg=0.6.0+deb7u1 && apt-get -y --build source php5-ffmpeg=0.6.0+deb7u1
 
 ```
 
@@ -107,7 +116,7 @@ tar -C ./xdebug-2.0.3 -zcvf xdebug_2.0.3.orig.tar.gz ./ --exclude='./debian'
 ## Build package:
 
 ```
-dpkg-buildpackage -us -uc -S [-b]
+dpkg-buildpackage -us -uc -S [-b] [-rfakeroot] [-tc]
 debuild [--no-tgz-check] -us -uc -S [-b]
 ```
 
@@ -126,3 +135,12 @@ sudo dpkg-deb -b extract/ build/
 *Source package formats can be changed in debian/source/format:*
 
 ```"3.0     (quilt)"``` *or* ```"3.0      (native)"```
+
+*Fix broken source build:*
+
+```
+rm /usr/lib/php5/build/ltmain.sh
+ln -s /usr/share/libtool/config/ltmain.sh /usr/lib/php5/build/ltmain.sh
+rm /usr/lib/php5/build/libtool.m4
+ln -s /usr/share/aclocal/libtool.m4 /usr/lib/php5/build/libtool.m4
+```

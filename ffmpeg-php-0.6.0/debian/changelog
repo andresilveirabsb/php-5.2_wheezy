@@ -1,4 +1,4 @@
-ffmpeg-php (0.6.0-2.2) unstable; urgency=low
+ffmpeg-php (0.6.0+deb7u1) unstable; urgency=low
 
   * Initial Release.
 
