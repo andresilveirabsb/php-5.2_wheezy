@@ -28,7 +28,7 @@
  #define MAIL_ASCIIZ_CHECK(str, len)			\
  	p = str;					\
  	e = p + len;					\
-@@ -213,24 +217,75 @@ PHPAPI int php_mail(char *to, char *subj
+@@ -213,24 +217,76 @@ PHPAPI int php_mail(char *to, char *subj
  	char *sendmail_path = INI_STR("sendmail_path");
  	char *sendmail_cmd = NULL;
  #if PHP_SIGCHILD
@@ -36,7 +36,7 @@
 +        void (*sig_handler)() = NULL;
  #endif
 +	char *mail_log = INI_STR("mail.log");
-+//	zend_bool mail_x_header = INI_BOOL("mail.add_x_header");
++	zend_bool mail_x_header = INI_BOOL("mail.add_x_header");
 +	char *hdr = headers;
 +	char *exec_filename = zend_get_executed_filename(TSRMLS_C);
 +	char error_time_str[128];
@@ -72,15 +72,16 @@
 +		efree(tmp);
 +	}
 +	if (INI_BOOL("mail.add_x_header") == 1) {
++//	if (PG(mail_x_header)) {
 +		size_t f_len = 0;
 +		char *f = 0;
 +		char *tmp = exec_filename;
 +		php_basename(tmp, strlen(tmp), NULL, 0, &f, &f_len);
 +
 +		if (headers != NULL) {
-+			spprintf(&hdr, 0, "X-PHP-Originating-Script: %ld:%s\r\n%s", php_getuid(), f, headers);
++			spprintf(&headers, 0, "X-PHP-Originating-Script: %ld:%s\r\n%s", php_getuid(), f, headers);
 +		} else {
-+			spprintf(&hdr, 0, "X-PHP-Originating-Script: %ld:%s\r\n", php_getuid(), f);
++			spprintf(&headers, 0, "X-PHP-Originating-Script: %ld:%s\r\n", php_getuid(), f);
 +		}
 +		efree(f);
 +		efree(tmp);
@@ -109,7 +110,7 @@
  #endif
  	}
  	if (extra_cmd != NULL) {
-@@ -273,12 +328,12 @@ PHPAPI int php_mail(char *to, char *subj
+@@ -273,12 +329,12 @@ PHPAPI int php_mail(char *to, char *subj
  				signal(SIGCHLD, sig_handler);
  			}
  #endif	
@@ -124,7 +125,7 @@
  			fprintf(sendmail, "%s\n", headers);
  		}
  		fprintf(sendmail, "\n%s\n", message);
-@@ -301,9 +356,9 @@ PHPAPI int php_mail(char *to, char *subj
+@@ -301,9 +357,9 @@ PHPAPI int php_mail(char *to, char *subj
  #endif
  #endif
  		{
@@ -136,7 +137,7 @@
  		}
  	} else {
  		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not execute mail delivery program '%s'", sendmail_path);
-@@ -313,9 +368,10 @@ PHPAPI int php_mail(char *to, char *subj
+@@ -313,9 +369,10 @@ PHPAPI int php_mail(char *to, char *subj
  		}
  #endif
  		return 0;
