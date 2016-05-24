@@ -1,3 +1,9 @@
+php-memcache (3.0.6-0+deb7u2) unstable; urgency=low
+
+  * Repackaged.
+
+ -- s3rj1k <evasive.gyron@gmail.com>  Mon, 23 May 2016 14:00:00 +0300
+
 php-memcache (3.0.6-0+deb7u1) unstable; urgency=low
 
   * Initial Release.
@@ -60,11 +66,11 @@ php-memcache (3.0.5-1) unstable; urgency=low
 
   * New upstream release
     - Fixed PECL bug #16059 (Build error: 'MSG_NOSIGNAL' undeclared)
-    - Added method MemcachePool::findServer(key) 
+    - Added method MemcachePool::findServer(key)
       which returns the server a key hashes to
-    - Changed MemcachePool::findServer() to return 
+    - Changed MemcachePool::findServer() to return
       only "hostname:port" since tcp port is significant
-    - Fixed PECL bug #16536 (Weight of 0 causes SegFault 
+    - Fixed PECL bug #16536 (Weight of 0 causes SegFault
       on memcache_add_server)
     - Fixed PECL bug #17566 (3.0.4 cache delete bug)
     - Fixed PECL Bug #16442 (memcache_set fail with integer value)

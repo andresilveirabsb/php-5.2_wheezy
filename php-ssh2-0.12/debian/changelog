@@ -1,3 +1,9 @@
+php-ssh2 (0.12-0+deb7u2) unstable; urgency=low
+
+  * Repackaged.
+
+ -- s3rj1k <evasive.gyron@gmail.com>  Mon, 23 May 2016 14:00:00 +0300
+
 php-ssh2 (0.12-0+deb7u1) unstable; urgency=low
 
   * Initial Release.
@@ -33,7 +39,7 @@ php-ssh2 (0.12-2) unstable; urgency=low
 php-ssh2 (0.12-1) unstable; urgency=low
 
   * New upstream release
-  * Switch conffile to /etc/php5/mods-available and use php5enmod and 
+  * Switch conffile to /etc/php5/mods-available and use php5enmod and
     php5dismod (Closes: #667782)
 
  -- Lior Kaplan <kaplan@debian.org>  Sun, 11 Aug 2013 11:52:03 +0200
@@ -64,7 +70,7 @@ php-ssh2 (0.11.0-2.1) unstable; urgency=low
 
 php-ssh2 (0.11.0-2) unstable; urgency=low
 
-  * Updated rules to change dh_clean -k to dh_prep 
+  * Updated rules to change dh_clean -k to dh_prep
   * Added Version number to GPL file link in copyright
   * Fixed issue with dh_pecl being called against wrong package name
                                                    (Closes: #531011)
