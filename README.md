@@ -136,6 +136,8 @@ sudo dpkg-deb -b extract/ build/
 
 ```"3.0     (quilt)"``` *or* ```"3.0      (native)"```
 
+```find -name format -exec echo "3.0 (quilt)" > {} \;```
+
 *Fix broken source build:*
 
 ```
