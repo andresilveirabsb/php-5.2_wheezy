@@ -77,17 +77,17 @@ dpkg-buildflags --get CFLAGS
 apt-get -y build-dep uw-imap && apt-get -y --build source uw-imap
 dpkg -i libc-client*.deb mlock*.deb
 
-apt-get -y build-dep php5=5.2.17-0+deb7u1 && apt-get -y --build source php5=5.2.17-0+deb7u1
+apt-get -y build-dep php5=5.2.17-0+deb7u2 && apt-get -y --build source php5=5.2.17-0+deb7u2
 apt-get -y install automake1.4 shtool && dpkg -i php5-dev*.deb php5-common*.deb
-apt-get -y build-dep php-apc=3.1.9-0+deb7u1 && apt-get -y --build source php-apc=3.1.9-0+deb7u1
-apt-get -y build-dep php-geoip=1.0.8-0+deb7u1 && apt-get -y --build source php-geoip=1.0.8-0+deb7u1
-apt-get -y build-dep php-imagick=3.0.1-0+deb7u1 && apt-get -y --build source php-imagick=3.0.1-0+deb7u1
-apt-get -y build-dep php-memcache=3.0.6-0+deb7u1 && apt-get -y --build source php-memcache=3.0.6-0+deb7u1
-apt-get -y build-dep php-ssh2=0.12-0+deb7u1 && apt-get -y --build source php-ssh2=0.12-0+deb7u1
-apt-get -y build-dep php-timezonedb=2015.7-0+deb7u1 && apt-get -y --build source php-timezonedb=2015.7-0+deb7u1
-apt-get -y build-dep xdebug=2.0.3-0+deb7u1 && apt-get -y --build source xdebug=2.0.3-0+deb7u1
-apt-get -y build-dep php5-xcache=1.3.0+deb7u1 && apt-get -y --build source php5-xcache=1.3.0+deb7u1
-apt-get -y build-dep php5-ffmpeg=0.6.0+deb7u1 && apt-get -y --build source php5-ffmpeg=0.6.0+deb7u1
+apt-get -y build-dep php-apc=3.1.9-0+deb7u2 && apt-get -y --build source php-apc=3.1.9-0+deb7u2
+apt-get -y build-dep php-geoip=1.0.8-0+deb7u2 && apt-get -y --build source php-geoip=1.0.8-0+deb7u2
+apt-get -y build-dep php-imagick=3.0.1-0+deb7u2 && apt-get -y --build source php-imagick=3.0.1-0+deb7u2
+apt-get -y build-dep php-memcache=3.0.6-0+deb7u2 && apt-get -y --build source php-memcache=3.0.6-0+deb7u2
+apt-get -y build-dep php-ssh2=0.12-0+deb7u2 && apt-get -y --build source php-ssh2=0.12-0+deb7u2
+apt-get -y build-dep php-timezonedb=2015.7-0+deb7u2 && apt-get -y --build source php-timezonedb=2015.7-0+deb7u2
+apt-get -y build-dep xdebug=2.0.3-0+deb7u2 && apt-get -y --build source xdebug=2.0.3-0+deb7u2
+apt-get -y build-dep php5-xcache=1.3.0-0+deb7u2 && apt-get -y --build source php5-xcache=1.3.0-0+deb7u2
+apt-get -y build-dep php5-ffmpeg=0.6.0-0+deb7u2 && apt-get -y --build source php5-ffmpeg=0.6.0-0+deb7u2
 
 ```
 
@@ -135,6 +135,11 @@ sudo dpkg-deb -b extract/ build/
 *Source package formats can be changed in debian/source/format:*
 
 ```"3.0     (quilt)"``` *or* ```"3.0      (native)"```
+
+```
+find -name format -exec bash -c 'echo "3.0 (quilt)" > {}' \;
+find -name format -exec cat {} \;
+```
 
 *Fix broken source build:*
 

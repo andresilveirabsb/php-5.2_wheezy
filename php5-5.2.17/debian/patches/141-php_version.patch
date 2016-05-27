@@ -1,7 +1,5 @@
-Index: php5-5.2.17/main/php_version.h
-===================================================================
---- php5-5.2.17.orig/main/php_version.h	2016-02-21 15:24:54.462964585 +0000
-+++ php5-5.2.17/main/php_version.h	2016-02-21 15:25:06.546397353 +0000
+--- a/main/php_version.h
++++ b/main/php_version.h
 @@ -3,6 +3,6 @@
  #define PHP_MAJOR_VERSION 5
  #define PHP_MINOR_VERSION 2

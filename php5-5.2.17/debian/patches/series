@@ -2,7 +2,6 @@
 002-static_openssl.patch
 004-ldap_fix.patch
 006-debian_quirks.patch
-010-mail-header.patch
 011-suhosin.patch
 012-libtool2.2.patch
 013-force_getaddrinfo.patch
@@ -71,4 +70,5 @@ CVE-2011-4885.patch
 154-memory_leaks.patch
 CVE-2012-0057.patch
 155-libc-client.patch
-
+157-mysql_load_data_local.patch
+158-mail.patch
