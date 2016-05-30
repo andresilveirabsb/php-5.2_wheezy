@@ -22,7 +22,7 @@
  ; Fopen wrappers ;
 --- a/main/main.c
 +++ b/main/main.c
-@@ -456,7 +456,7 @@ PHP_INI_BEGIN()
+@@ -453,7 +453,7 @@ PHP_INI_BEGIN()
  	PHP_INI_ENTRY("mail.force_extra_parameters",NULL,		PHP_INI_SYSTEM|PHP_INI_PERDIR,		OnChangeMailForceExtra)
  	PHP_INI_ENTRY("disable_functions",			"",			PHP_INI_SYSTEM,		NULL)
  	PHP_INI_ENTRY("disable_classes",			"",			PHP_INI_SYSTEM,		NULL)

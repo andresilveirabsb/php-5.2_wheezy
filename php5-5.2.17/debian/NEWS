@@ -1,6 +1,7 @@
 php5 (5.2.17-0+deb7u2) unstable; urgency=low
 
   * Some hotfixes
+  * Removed suhosin patch
 
  -- s3rj1k <evasive.gyron@gmail.com>  Mon, 23 May 2016 14:00:00 +0300
 
@@ -48,6 +49,6 @@ php5 (5.2.3-2) unstable; urgency=low
   documentation, etc.
 
   In any event please report successes and/or failures to us at
-  pkg-php-maint@lists.alioth.debian.org. 
+  pkg-php-maint@lists.alioth.debian.org.
 
  -- sean finney <seanius@debian.org>  Thu, 12 Jul 2007 23:38:43 +0200
