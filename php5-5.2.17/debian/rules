@@ -1,18 +1,18 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper. 
+# Sample debian/rules that uses debhelper.
 # GNU copyright 1997 by Joey Hess.
 #
 # This version is for a hypothetical package that builds an
 # architecture-dependant package, as well as an architecture-independent
 # package.
 
-# Uncomment this to turn on verbose mode. 
+# Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
-# Set this flag to 'yes' if you want to disable all modifications breaking abi 
+# Set this flag to 'yes' if you want to disable all modifications breaking abi
 # compatibility to upstream
 PHP5_COMPAT=no
 
@@ -26,7 +26,7 @@ PHP5_DEBIAN_REVISION  = $(shell echo $(PHP5_SOURCE_VERSION) | sed "s/.*-//")
 
 # specify some options to our patch system
 QUILT_DIFF_OPTS=-p
-QUILT_NO_DIFF_TIMESTAMPS=1 
+QUILT_NO_DIFF_TIMESTAMPS=1
 QUILT_PATCH_OPTS=--ignore-whitespace
 export QUILT_DIFF_OPTS QUILT_NO_DIFF_TIMESTAMPS QUILT_PATCH_OPTS
 
@@ -36,7 +36,7 @@ ifeq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 else
   CFLAGS += -O0
 endif
-CFLAGS += -Wall -fsigned-char -fno-strict-aliasing 
+CFLAGS += -Wall -fsigned-char -fno-strict-aliasing
 # LFS support
 ifneq (yes,$(PHP5_COMPAT))
   CFLAGS += $(shell getconf LFS_CFLAGS)
@@ -97,7 +97,6 @@ COMMON_CONFIG=--build=$(DEB_BUILD_GNU_TYPE) \
 		--with-pear=/usr/share/php \
 		--enable-calendar \
 		--enable-json \
-		--enable-suhosin \
 		--enable-sysvsem \
 		--enable-sysvshm \
 		--enable-sysvmsg \

@@ -30,16 +30,16 @@
  PHP_CONFIG_NICE(config.nice)
  
  PHP_CANONICAL_HOST_TARGET
-@@ -257,7 +257,7 @@ sinclude(TSRM/tsrm.m4)
+@@ -256,7 +256,7 @@ sinclude(TSRM/threads.m4)
+ sinclude(TSRM/tsrm.m4)
  
- sinclude(main/suhosin_patch.m4)
  
 -divert(2)
 +dnl divert(2)
  
  dnl ## Diversion 2 is where we set PHP-specific options and come up
  dnl ## with reasonable default values for them. We check for pthreads here
-@@ -296,7 +296,7 @@ if test "$enable_maintainer_zts" = "yes"
+@@ -295,7 +295,7 @@ if test "$enable_maintainer_zts" = "yes"
    PTHREADS_FLAGS
  fi
  
@@ -48,7 +48,7 @@
  
  dnl ## In diversion 3 we check for compile-time options to the PHP
  dnl ## core and how to deal with different system dependencies.
-@@ -656,7 +656,7 @@ if test "x$php_crypt_r" = "x1"; then
+@@ -655,7 +655,7 @@ if test "x$php_crypt_r" = "x1"; then
    PHP_CRYPT_R_STYLE
  fi
  
@@ -57,7 +57,7 @@
  
  dnl ## In diversion 4 we check user-configurable general settings.
  
-@@ -897,7 +897,7 @@ else
+@@ -896,7 +896,7 @@ else
    AC_MSG_RESULT([using system default])
  fi
  

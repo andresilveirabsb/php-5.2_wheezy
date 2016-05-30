@@ -39,7 +39,7 @@
  #include <ctype.h>
 --- a/main/php.h
 +++ b/main/php.h
-@@ -249,6 +249,10 @@ END_EXTERN_C()
+@@ -242,6 +242,10 @@ END_EXTERN_C()
  /* macros */
  #define STR_PRINT(str)	((str)?(str):"")
  

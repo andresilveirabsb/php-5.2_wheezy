@@ -9,7 +9,7 @@
  PHP_VERSION="$PHP_MAJOR_VERSION.$PHP_MINOR_VERSION.$PHP_RELEASE_VERSION$PHP_EXTRA_VERSION"
  PHP_VERSION_ID=`expr [$]PHP_MAJOR_VERSION \* 10000 + [$]PHP_MINOR_VERSION \* 100 + [$]PHP_RELEASE_VERSION`
  
-@@ -986,7 +986,7 @@ if test "$PHP_CLI" = "no"; then
+@@ -985,7 +985,7 @@ if test "$PHP_CLI" = "no"; then
  fi
  
  PHP_ARG_WITH(pear, [whether to install PEAR],
@@ -18,7 +18,7 @@
    --without-pear          Do not install PEAR], DEFAULT, yes)
  
  if test "$PHP_PEAR" != "no"; then
-@@ -1146,6 +1146,7 @@ EXPANDED_EXTENSION_DIR=`eval echo $EXTEN
+@@ -1145,6 +1145,7 @@ EXPANDED_EXTENSION_DIR=`eval echo $EXTEN
  EXPANDED_LOCALSTATEDIR=`eval echo $localstatedir`
  EXPANDED_BINDIR=`eval echo $bindir`
  EXPANDED_SBINDIR=`eval echo $sbindir`
@@ -26,7 +26,7 @@
  EXPANDED_LIBDIR=$libdir
  EXPANDED_SYSCONFDIR=`eval echo $sysconfdir`
  EXPANDED_DATADIR=$datadir
-@@ -1162,6 +1163,7 @@ AC_SUBST(EXPANDED_PEAR_INSTALLDIR)
+@@ -1161,6 +1162,7 @@ AC_SUBST(EXPANDED_PEAR_INSTALLDIR)
  AC_SUBST(EXPANDED_EXTENSION_DIR)
  AC_SUBST(EXPANDED_BINDIR)
  AC_SUBST(EXPANDED_SBINDIR)

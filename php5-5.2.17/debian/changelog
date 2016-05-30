@@ -1,6 +1,7 @@
 php5 (5.2.17-0+deb7u2) unstable; urgency=low
 
   * Some hotfixes
+  * Removed suhosin patch
 
  -- s3rj1k <evasive.gyron@gmail.com>  Mon, 23 May 2016 14:00:00 +0300
 
@@ -19,7 +20,7 @@ php5 (5.2.12.dfsg.1-2) unstable; urgency=low
     stable/testing/unstable
   * Reduce number of libdb*-dev to include only version in
     stable/testing/unstable
-  * Switch to automake (>= 1.11) | automake1.11, depend on autoconf 
+  * Switch to automake (>= 1.11) | automake1.11, depend on autoconf
     (>= 2.63) (Closes: #549148)
 
  -- Ondřej Surý <ondrej@debian.org>  Mon, 11 Jan 2010 17:31:33 +0100
@@ -118,7 +119,7 @@ php5 (5.2.10.dfsg.1-2.1) unstable; urgency=medium
    * Fix FTBFS with new autoconf. Thanks to Russ Allbery for the patch.
      Closes: #542906
 
- -- Andreas Barth <aba@not.so.argh.org>  Sun, 30 Aug 2009 13:49:40 +0200 
+ -- Andreas Barth <aba@not.so.argh.org>  Sun, 30 Aug 2009 13:49:40 +0200
 
 php5 (5.2.10.dfsg.1-2) unstable; urgency=low
 
@@ -151,8 +152,8 @@ php5 (5.2.9.dfsg.1-4) unstable; urgency=high
     Daniel Hahler (closes: #528833).
 
   [ Sean Finney ]
-  * fix syntax error in phpize5 caused by libtool2.2.patch 
-    - thanks to Michal Čihař (Closes: #529248) 
+  * fix syntax error in phpize5 caused by libtool2.2.patch
+    - thanks to Michal Čihař (Closes: #529248)
   * this (and the previous libtool2.2 fix) should get to testing as
     fast as possible, so bumping prio to high.
 
@@ -263,7 +264,7 @@ php5 (5.2.6.dfsg.1-3) unstable; urgency=low
 php5 (5.2.6.dfsg.1-2) unstable; urgency=low
 
   [ Sean Finney ]
-  * Make sure a file used to track state is properly removed in the 
+  * Make sure a file used to track state is properly removed in the
     postinst, thanks Raphael (closes: #511049).
 
   [ Thijs Kinkhorst ]
@@ -380,7 +381,7 @@ php5 (5.2.6-2) unstable; urgency=high
     - dropping linda overrides, linda is gone now
     - s/meta-package/metapackage
   * debian/control:
-    - Updated php5's description so it mentions three instead of 
+    - Updated php5's description so it mentions three instead of
        only two server-side SAPIs
     - Depend on php5-cli in php-pear (Closes: #482517)
       + Previous change reverted because of PEAR packages FTBFS
@@ -413,8 +414,8 @@ php5 (5.2.6-1) unstable; urgency=medium
     + incomplete multibyte chars inside escapeshellcmd()
 
   [ Sean Finney ]
-  * New patch (use_embedded_timezonedb.patch) allows us to default to 
-    using the system provided timezone database instead of the one bundled 
+  * New patch (use_embedded_timezonedb.patch) allows us to default to
+    using the system provided timezone database instead of the one bundled
     with PHP.  Many thanks to Joe Orten from Red Hat for the patch!
     (closes: #447174, #471104).
   * Updated the Suhosin patch to v0.9.6 (5.2.6).
@@ -424,10 +425,10 @@ php5 (5.2.6-1) unstable; urgency=medium
     are now linking against this as well and mysql exports the same symbols
     from both libraries.  Thanks to Stefan Fritsch (closes: #469081).
   * Massaged/updated various other patches in debian/patches
-  * Update copyright information to have information about non-trivial 
+  * Update copyright information to have information about non-trivial
     patches worthy of copyright attributions, and update information about
     current debian maintainers.
-  * Add some useful quilt settings in debian/rules to lower the amount of 
+  * Add some useful quilt settings in debian/rules to lower the amount of
     noise in future quilt updates.
   * Now building a php5 apache2 module with filter-module support in a new
     libapache2-mod-php5filter package (closes: #438120).
@@ -464,7 +465,7 @@ php5 (5.2.6-1) unstable; urgency=medium
     - includes some variables which were no present in the first version and
       removes modules not available in PHP5. Also fixes typos in comments which
       have since been fixed in php.ini-dist
-    - adds notes (Debian-specific) of which security features applications 
+    - adds notes (Debian-specific) of which security features applications
       should not rely on
     - add more information of why some variables were enabled
     - reorder the description of changes to suit the location in the config file
@@ -529,7 +530,7 @@ php5 (5.2.5-1) unstable; urgency=low
 
   [ Raphael Geissert ]
   * debian/rules: now DEB_BUILD_OPTIONS=nocheck aware
-  * Updated description of the php5 meta-package to reflect removal of apache 
+  * Updated description of the php5 meta-package to reflect removal of apache
     (Closes: #418038)
   * Capitalise apache where needed (Closes: #439575)
   * Homepage is now a control entry (moved from Description), Closes: #439578
@@ -592,7 +593,7 @@ php5 (5.2.4-1) unstable; urgency=low
   * New upstream release.
   * Security issues resolved in the latest release:
     - CVE-2007-2519 - Directory traversal vulnerability in PEAR
-  
+
 
   [ sean finney ]
   * patch from Jan Wagner to be able to conditionally disable any
@@ -650,7 +651,7 @@ php5 (5.2.2-2) unstable; urgency=low
     help set an upgrade path.
   - apache 1.x support is soon disappearing.  as a consequence we are
     no longer building the libapache-mod-php5 module.  the php5 metapackage
-    should as a result bring in libapache2-mod-php5 by default for those who 
+    should as a result bring in libapache2-mod-php5 by default for those who
     already have it installed.
 
  -- sean finney <seanius@debian.org>  Sun, 20 May 2007 21:59:56 +0200
@@ -664,7 +665,7 @@ php5 (5.2.2-1) unstable; urgency=low
       our fix for the time being.
     - it doesn't seem like MOPB-45 has been fixed yet.
   * remove build-dependency option on libmysqlclient12-dev, since the mysqli
-    option requires it, and 15 is in stable now anyway.  thanks to 
+    option requires it, and 15 is in stable now anyway.  thanks to
     Henk van de kamer for finding this (closes: #422224).
   * now includes requested fix for mysql row counts (closes: #418471).
   * needle/haystack issues are reported fixed (closes: #399924).
@@ -724,7 +725,7 @@ php5 (5.2.0-10) unstable; urgency=high
     module.  this version contains an updated version of the patch
     for CVE-2007-0906 (116-CVE-2007-0906_streams.patch), which should
     fix the regression.  Thanks to Martin Pitt for noticing this.
-  * Fix the patch names in the previous changelog entry, and fix a factual 
+  * Fix the patch names in the previous changelog entry, and fix a factual
     inaccuracy that was accidentally pasted from the php4 changelog.
   * The previous update was missing two fixes from CVE-2007-0906:
       * interbase: (116-CVE-2007-0906_interbase.patch)
@@ -781,7 +782,7 @@ php5 (5.2.0-8) unstable; urgency=high
     memory leak in zend_alloc (closes: #402506).
     patch: 115-zend_alloc.c_memleak.patch
   * The memleak and FTBFS are targeted at etch, and there aren't
-    any other significant changes, so priority=high. 
+    any other significant changes, so priority=high.
 
  -- sean finney <seanius@debian.org>  Sun, 17 Dec 2006 16:49:35 +0100
 
@@ -828,7 +829,7 @@ php5 (5.2.0-4) unstable; urgency=high
   * Update build-dependencies to reflect that libpcre3-dev >= 6.6
     is required.  Thanks to Jan Wagner for pointing this out.
   * loosen dependencys for libapache2-mod-php5 to allow usage with
-    apache2-mpm-itk as an alternative to prefork.  
+    apache2-mpm-itk as an alternative to prefork.
     Closes: #398580, #398481.
 
  -- sean finney <seanius@debian.org>  Wed, 15 Nov 2006 08:33:28 +0100
@@ -912,10 +913,10 @@ php5 (5.1.6-5) unstable; urgency=high
   * start using ucf to manage the the various SAPI php.ini files.
   * cleanup and consolidation of a few things in the ./debian dir
   * bump the memory limit to 32M for the cli API (closes: #375070, #340586).
-  * include a fix for missing mbstring headers reported by Jan Wagner 
+  * include a fix for missing mbstring headers reported by Jan Wagner
     (closes: #391368).
     patch: 111-mbstring-headers.patch.
-  * include support for PTY's in proc_open, as reported by Eike Dehling.  
+  * include support for PTY's in proc_open, as reported by Eike Dehling.
     according to php's BTS (http://bugs.php.net/bug.php?id=39224) the
     feature was disabled only because the configure script couldn't
     accurately determine whether the feature was available, and we know
@@ -966,7 +967,7 @@ php5 (5.1.6-1) unstable; urgency=high
       with realpath cache. (CVE-2006-2563) (Closes: #370165)
     - Fixed overflow in GD extension on invalid GIF images.
     - Fixed a buffer overflow inside sscanf() function. (CVE-2006-4020)
-      (Closes: #382256)      
+      (Closes: #382256)
     - Fixed an out of bounds read inside stripos() function.
     - Fixed memory_limit restriction on 64 bit system (really with 5.1.6).
   * Bump libdb build-dep from libdb4.3 to libdb4.4, to match with apache.
@@ -1043,7 +1044,7 @@ php5 (5.1.1-1) unstable; urgency=low
       array with a multipart/form-data POST request; see CVE-2005-3390
     - Resolves numerous safe_mode and open_basedir bypasses; CVE-2005-3391
     - Resolves INI settings leaks in the apache2 SAPI, leading to safe_mode
-      and open_basedir bypasses between virtual hosts; CVE-2005-3392 
+      and open_basedir bypasses between virtual hosts; CVE-2005-3392
     - Resolves a CRLF injection vulnerability in the mb_send_mail function,
       allowing injection of arbitrary mail headers; see CVE-2005-3883
     - Includes PEAR 1.4.5, resolving a vulnerability in the pear installer
@@ -1123,7 +1124,7 @@ php5 (5.0.4-4) unstable; urgency=low
     - Enable support for gdbm files in the dba handler; half the base system
       already appears to depend on libgdm, so we can't make things worse.
     - Add another patch from CVS to fix a segfault in the catch/throw
-      handler under interesting nesting cases (closes: #322507)  
+      handler under interesting nesting cases (closes: #322507)
     - Rebuild against libsnmp9-dev for new libsnmp SOVER (closes: #327107)
 
  -- Adam Conrad <adconrad@0c3.net>  Thu,  8 Sep 2005 00:36:36 +1000
@@ -1144,7 +1145,7 @@ php5 (5.0.4-3) unstable; urgency=low
     doing so in such a way as to still allow for easy cross-compiling.
   * Add postgresql-dev build-dep alternate for easy hoary/sarge backports.
   * Make libapache2-mod-php5 the default alternate dependency for the php5
-    metapackage, since we really do want to encourage the apache upgrade. 
+    metapackage, since we really do want to encourage the apache upgrade.
   * Make php5-dev stop shipping copies of files from autotools-dev, shtool,
     and libtool, and instead symlink to them and depend on those packages,
     thus avoiding the shtool issues from CAN-2005-1751 and CAN-2005-1759.
@@ -1168,7 +1169,7 @@ php5 (5.0.4-2) unstable; urgency=low
 php5 (5.0.4-1) unstable; urgency=low
 
   * Initial PHP5 release; packaging forked from php4 4:4.3.11-1.
-    - Closes: #262977, #293832 
+    - Closes: #262977, #293832
   * Ondrej Sury <ondrej@sury.org>:
     - Removed some obsolete cruft, since there wasn't any previous php5
       packages there is no need, to check /usr/share/doc/*, etc.
@@ -1519,7 +1520,7 @@ php4 (4:4.3.8-12) unstable; urgency=high
  -- Adam Conrad <adconrad@0c3.net>  Sun,  5 Sep 2004 19:17:42 -0600
 
 php4 (4:4.3.8-11) unstable; urgency=high
-  
+
   * Andres Salomon <dilinger@voxel.net>:
     - Fix bashism in maxlifetime script (closes: #270015)
   * Adam Conrad <adconrad@0c3.net>:
@@ -1620,7 +1621,7 @@ php4 (4:4.3.8-6) unstable; urgency=high
   * Rework the apache2 restarting logic to only restart apache2 if
     apache2ctl configtest succeeds, otherwise kick out a warning to
     the user.  Even then, we run force-reload with ||true, in case
-    apache2 fails to start for other reasons (closes: #264958) 
+    apache2 fails to start for other reasons (closes: #264958)
   * Make php4-gd Provide php4-gd2, so packages which still depend on
     php4-gd2 are installable (and so packaging frontends can take the
     provides/conflicts/replaces hint and DTRT with it)
@@ -1787,7 +1788,7 @@ php4 (4:4.3.4-4) unstable; urgency=low
   * Drop apache2 work-around patch and add build-dep on apache2 2.0.48-8,
     now that #228840 is fixed.
   * Fix FTBFS problem caused by curl api changes, adding patches 011 and
-    012 (closes: #239159).  
+    012 (closes: #239159).
   * Add phpapi Provides for libapache2-mod-php4 (closes: #240386).
   * Add versioned build-dep for pcre, as apache2 has proven that pcre-3.9
     and older won't work (closes: #215069).
@@ -2092,7 +2093,7 @@ php4 (4:4.2.3-6) unstable; urgency=low
   * Change section of php4-dev package to devel.
   * Add libkrb5-dev to build-depends, since libc-client2002-dev doesn't
     pull it in (closes: #173313).
-  * Depend on coreutils instead of fileutils, since the latter is now an 
+  * Depend on coreutils instead of fileutils, since the latter is now an
     empty package (closes: #171265).
 
  -- Steve Langasek <vorlon@debian.org>  Sun, 15 Dec 2002 23:20:30 -0600
@@ -2265,7 +2266,7 @@ php4 (4:4.1.1-2.1) unstable; urgency=low
   * Non-maintainer upload.
   * loosen apache-common dependency to make us forwards-compatible, as
     recommended by the apache maintainer.
-  * use gcc-3.0 when building on arm, because the default toolchain on 
+  * use gcc-3.0 when building on arm, because the default toolchain on
     that arch has Issues (closes: #135906, #135913).
 
  -- Steve Langasek <vorlon@debian.org>  Tue, 26 Feb 2002 09:59:49 -0600
@@ -2732,7 +2733,7 @@ php4 (4.0.4final-5) unstable; urgency=medium
 php4 (4.0.4final-4) unstable; urgency=low
 
   * debian/libc-client.la: add -lpam -ldl -lcrypt
-  * fix php4-cgi.postinst bugs (closes: #80817, #80805, #80801) 
+  * fix php4-cgi.postinst bugs (closes: #80817, #80805, #80801)
 
  -- Petr Cech <cech@debian.org>  Fri, 29 Dec 2000 11:40:43 +0100
 
@@ -2838,7 +2839,7 @@ php4 (4.0.3pl1-6) unstable; urgency=low
 php4 (4.0.3pl1-5) unstable; urgency=low
 
   * Back out changes about --enable-versioning
-  * ext/domxml/php_domxml.c : fix compilation with recent libxml2 (>=2.2.7) 
+  * ext/domxml/php_domxml.c : fix compilation with recent libxml2 (>=2.2.7)
 
  -- Petr Cech <cech@debian.org>  Tue, 21 Nov 2000 18:03:56 +0100
 
@@ -3047,7 +3048,7 @@ php4 (4.0.0-1) unstable; urgency=low
 
 php4 (4.0rc1-2) unstable; urgency=low
 
-  * Compile with latest apache and libraries from woody 
+  * Compile with latest apache and libraries from woody
     (Closes: #62631, #62640)
 
  -- Gergely Madarasz <gorgo@sztaki.hu>  Wed, 19 Apr 2000 14:39:25 +0200
